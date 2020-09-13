@@ -1,9 +1,12 @@
 package recipes
 
-import "github.com/gin-gonic/gin"
+import (
+	//"github.com/dogray7722/golang-cookbook/domain/recipes"
+	"github.com/gin-gonic/gin"
+)
 
 func Create(c *gin.Context) {
-	//TODO Implement
+	//var recipe recipes.Recipe
 }
 
 func List(c *gin.Context) {
