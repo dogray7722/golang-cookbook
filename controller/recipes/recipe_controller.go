@@ -3,6 +3,7 @@ package recipes
 import (
 	"github.com/dogray7722/golang-cookbook/domain/recipes"
 	"github.com/dogray7722/golang-cookbook/service"
+	"github.com/dogray7722/golang-cookbook/utils/errors"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -10,17 +11,16 @@ import (
 func Create(c *gin.Context) {
 	var recipe recipes.Recipe
 	if err := c.ShouldBindJSON(&recipe); err != nil {
-		//TODO return bad request to the caller
+		restErr := errors.NewBadRequestError("invalid json body")
+		c.JSON(restErr.Status, restErr)
 		return
 	}
-
 
 	result, saveErr := service.CreateRecipe(recipe)
 	if saveErr != nil {
-		//TODO: handle recipe creation error
+		c.JSON(saveErr.Status, saveErr)
 		return
 	}
-
 	c.JSON(http.StatusCreated, result)
 }
 
