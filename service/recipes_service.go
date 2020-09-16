@@ -6,5 +6,10 @@ import (
 )
 
 func CreateRecipe(recipe recipes.Recipe) (*recipes.Recipe, *errors.RestErr) {
+	if err := recipe.Save(); err != nil {
+		return nil, err
+	}
+
 	return &recipe, nil
+
 }
