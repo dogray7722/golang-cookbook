@@ -11,5 +11,4 @@ func CreateRecipe(recipe recipes.Recipe) (*recipes.Recipe, *errors.RestErr) {
 	}
 
 	return &recipe, nil
-
 }

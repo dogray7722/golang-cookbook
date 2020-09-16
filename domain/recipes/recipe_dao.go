@@ -29,10 +29,6 @@ func (recipe *Recipe) Save() *errors.RestErr {
 		return errors.NewBadRequestError(fmt.Sprintf("recipe %d already exists", recipe.Id))
 	}
 
-	if current.Name == recipe.Name {
-		return errors.NewBadRequestError(fmt.Sprintf("recipe name %d already exists", recipe.Name))
-	}
-
 	recipesDB[recipe.Id] = recipe
 	return nil
 }
