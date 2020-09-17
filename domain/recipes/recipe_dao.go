@@ -16,9 +16,11 @@ func (recipe *Recipe) Get() *errors.RestErr {
 	}
 
 	recipe.Id = result.Id
+	recipe.Name = result.Name
 	recipe.Ingredients = result.Ingredients
 	recipe.Instructions = result.Instructions
 	recipe.DateCreated = result.DateCreated
+	recipe.Status = result.Status
 
 	return nil
 }
