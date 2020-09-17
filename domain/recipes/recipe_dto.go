@@ -10,6 +10,6 @@ type Recipe struct {
 }
 
 type Ingredient struct {
-	servingSize string `json:"serving_size"`
-	item        string `json:"item"`
+	ServingSize string `json:"serving_size"`
+	Item        string `json:"item"`
 }

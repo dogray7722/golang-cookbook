@@ -25,11 +25,11 @@ func Create(c *gin.Context) {
 }
 
 func List(c *gin.Context) {
-	//TODO Implement
+
 }
 
 func Get(c *gin.Context) {
-	//TODO Implement
+	//userId, userErr := strconv.ParseInt(c.Param("recipe_id"))
 }
 
 func Update(c *gin.Context) {

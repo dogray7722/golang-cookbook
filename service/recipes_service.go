@@ -12,3 +12,7 @@ func CreateRecipe(recipe recipes.Recipe) (*recipes.Recipe, *errors.RestErr) {
 
 	return &recipe, nil
 }
+
+//func GetRecipe(recipeId int64) (*recipes.Recipe, *errors.RestErr) {
+//	return nil, fmt.Errorf("implement me")
+//}
