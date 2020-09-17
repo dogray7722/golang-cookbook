@@ -2,6 +2,7 @@ package recipes
 
 import (
 	"fmt"
+	"github.com/dogray7722/golang-cookbook/utils/date_utils"
 	"github.com/dogray7722/golang-cookbook/utils/errors"
 )
 
@@ -30,6 +31,8 @@ func (recipe *Recipe) Save() *errors.RestErr {
 	if current != nil {
 		return errors.NewBadRequestError(fmt.Sprintf("recipe %d already exists", recipe.Id))
 	}
+
+	recipe.DateCreated = date_utils.GetNowString()
 
 	recipesDB[recipe.Id] = recipe
 	return nil
