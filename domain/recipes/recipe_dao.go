@@ -3,8 +3,11 @@ package recipes
 import (
 	"fmt"
 	"github.com/dogray7722/golang-cookbook_dogray7722/datasources/postgres/recipes_db"
-	"github.com/dogray7722/golang-cookbook_dogray7722/utils/date_utils"
 	"github.com/dogray7722/golang-cookbook_dogray7722/utils/errors"
+)
+
+const (
+	queryInsertRecipe = "INSERT INTO recipes(name, ingredients, instructions, date_created, status) VALUES($1, $2, $3, $4, $5);"
 )
 
 var (
@@ -33,13 +36,24 @@ func (recipe *Recipe) Get() *errors.RestErr {
 }
 
 func (recipe *Recipe) Save() *errors.RestErr {
-	current := recipesDB[recipe.Id]
-	if current != nil {
-		return errors.NewBadRequestError(fmt.Sprintf("recipe %d already exists", recipe.Id))
+	stmt, err := recipes_db.Client.Prepare(queryInsertRecipe)
+	if err != nil {
+		return errors.NewInternalServerError(err.Error())
+	}
+	defer stmt.Close()
+
+	insertResult, err := stmt.Exec(recipe.Name, recipe.Ingredients, recipe.Instructions, recipe.DateCreated, recipe.Status)
+	if err != nil {
+		return errors.NewInternalServerError(
+			fmt.Sprintf("failed to save new recipe: %s", err.Error()))
+	}
+	recipeId, err := insertResult.LastInsertId()
+	if err != nil {
+		return errors.NewInternalServerError(
+			fmt.Sprintf("failed to save new recipe: %s", err.Error()))
 	}
 
-	recipe.DateCreated = date_utils.GetNowString()
+	recipe.Id = recipeId
 
-	recipesDB[recipe.Id] = recipe
 	return nil
 }
