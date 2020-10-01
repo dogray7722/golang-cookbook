@@ -38,7 +38,6 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-	//defer Client.Close()
 
 	if err = Client.Ping(); err != nil {
 		panic(err)
