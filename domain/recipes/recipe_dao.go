@@ -8,12 +8,14 @@ import (
 )
 
 const (
-	queryInsertRecipe     = "INSERT INTO recipes(name, instructions, status) VALUES($1, $2, $3) RETURNING id;"
-	queryInsertIngredient = "INSERT INTO ingredients(serving_size, item) VALUES($1, $2) RETURNING id;"
-	queryInsertLookup     = "INSERT INTO recipes_to_ingredients(recipe_id, ingredient_id) VALUES($1, $2);"
 	indexUniqueRecipeName = "constraint_name"
-	queryGetRecipe        = "SELECT id, name, instructions, status, date_created FROM recipes WHERE id = $1"
 	errorNoRows           = "no rows in result set"
+
+	queryInsertRecipe           = "INSERT INTO recipes(name, instructions, status) VALUES($1, $2, $3) RETURNING id;"
+	queryInsertIngredient       = "INSERT INTO ingredients(serving_size, item) VALUES($1, $2) RETURNING id;"
+	queryInsertLookup           = "INSERT INTO recipes_to_ingredients(recipe_id, ingredient_id) VALUES($1, $2);"
+	queryGetRecipe              = "SELECT id, name, instructions, status, date_created FROM recipes WHERE id = $1"
+	queryGetIngredientsByRecipe = `SELECT id, serving_size, item FROM ingredients WHERE id IN (SELECT ingredient_id FROM recipes_to_ingredients WHERE recipe_id = $1)`
 )
 
 func (recipe *Recipe) Get() *errors.RestErr {
@@ -35,8 +37,41 @@ func (recipe *Recipe) Get() *errors.RestErr {
 			fmt.Sprintf("error when trying to get recipe %d: %s", recipe.Id, err.Error()))
 	}
 
+	recipeIngredients, err := getIngredients(recipe.Id)
+	if err != nil {
+		return errors.NewInternalServerError(
+			fmt.Sprintf("there was a problem retrieving recipe ingredients: %s", err.Error()))
+	}
+
+	recipe.Ingredients = recipeIngredients
+
 	return nil
 
+}
+
+func getIngredients(recipeID int64) ([]Ingredient, error) {
+	stmt, err := recipes_db.Client.Prepare(queryGetIngredientsByRecipe)
+	if err != nil {
+		return nil, err
+	}
+	defer stmt.Close()
+
+	rows, err := stmt.Query(recipeID)
+	if err != nil {
+		return nil, err
+	}
+
+	results := []Ingredient{}
+	for rows.Next() {
+		ing := Ingredient{}
+		err := rows.Scan(&ing.Id, &ing.ServingSize, &ing.Item)
+		if err != nil {
+			return nil, err
+		}
+		results = append(results, ing)
+	}
+
+	return results, nil
 }
 
 func (recipe *Recipe) Save() *errors.RestErr {
