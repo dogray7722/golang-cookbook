@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/dogray7722/golang-cookbook_dogray7722/datasources/postgres/recipes_db"
 	"github.com/dogray7722/golang-cookbook_dogray7722/utils/errors"
+	"strings"
 )
 
 const (
@@ -48,6 +49,11 @@ func (recipe *Recipe) Save() *errors.RestErr {
 	var id int64
 	err = stmt.QueryRow(recipe.Name, recipe.Instructions, recipe.Status).Scan(&id)
 	if err != nil {
+		if strings.Contains(err.Error(), "constraint_name") {
+			return errors.NewBadRequestError(fmt.Sprintf(
+				"recipe name %s already exists", recipe.Name))
+		}
+
 		return errors.NewInternalServerError(
 			fmt.Sprintf("failed to save new recipe: %s", err.Error()))
 	}
