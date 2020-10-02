@@ -7,55 +7,52 @@ import (
 )
 
 const (
-	queryInsertRecipe     = "INSERT INTO recipes(name, instructions, date_created, status) VALUES($1, $2, $3, $4);"
-	queryInsertIngredient = "INSERT INTO ingredients(serving_size, item, date_created) VALUES($1, $2, $3);"
+	queryInsertRecipe     = "INSERT INTO recipes(name, instructions, status) VALUES($1, $2, $3) RETURNING id;"
+	queryInsertIngredient = "INSERT INTO ingredients(serving_size, item) VALUES($1, $2) RETURNING id;"
 	queryInsertLookup     = "INSERT INTO recipes_to_ingredients(recipe_id, ingredient_id) VALUES($1, $2);"
 )
 
-var (
-	recipesDB = make(map[int64]*Recipe)
-)
+//var (
+//	recipesDB = make(map[int64]*Recipe)
+//)
 
-func (recipe *Recipe) Get() *errors.RestErr {
-	newClient := recipes_db.Client
-	if err := newClient.Ping(); err != nil {
-		panic(err)
-	}
-
-	result := recipesDB[recipe.Id]
-	if result == nil {
-		return errors.NewNotFoundError(fmt.Sprintf("recipe %d not found", recipe.Id))
-	}
-
-	recipe.Id = result.Id
-	recipe.Name = result.Name
-	recipe.Ingredients = result.Ingredients
-	recipe.Instructions = result.Instructions
-	recipe.DateCreated = result.DateCreated
-	recipe.Status = result.Status
-
-	return nil
-}
+//func (recipe *Recipe) Get() *errors.RestErr {
+//	newClient := recipes_db.Client
+//	if err := newClient.Ping(); err != nil {
+//		panic(err)
+//	}
+//
+//	result := recipesDB[recipe.Id]
+//	if result == nil {
+//		return errors.NewNotFoundError(fmt.Sprintf("recipe %d not found", recipe.Id))
+//	}
+//
+//	recipe.Id = result.Id
+//	recipe.Name = result.Name
+//	recipe.Ingredients = result.Ingredients
+//	recipe.Instructions = result.Instructions
+//	recipe.DateCreated = result.DateCreated
+//	recipe.Status = result.Status
+//
+//	return nil
+//}
 
 func (recipe *Recipe) Save() *errors.RestErr {
 	stmt, err := recipes_db.Client.Prepare(queryInsertRecipe)
 	if err != nil {
-		return errors.NewInternalServerError(err.Error())
+		return errors.NewInternalServerError(
+			fmt.Sprintf("failed to save new recipe: %s", err.Error()))
 	}
 	defer stmt.Close()
 
-	insertResult, err := stmt.Exec(recipe.Name, recipe.Ingredients, recipe.Instructions, recipe.DateCreated, recipe.Status)
-	if err != nil {
-		return errors.NewInternalServerError(
-			fmt.Sprintf("failed to save new recipe: %s", err.Error()))
-	}
-	recipeId, err := insertResult.LastInsertId()
+	var id int64
+	err = stmt.QueryRow(recipe.Name, recipe.Instructions, recipe.Status).Scan(&id)
 	if err != nil {
 		return errors.NewInternalServerError(
 			fmt.Sprintf("failed to save new recipe: %s", err.Error()))
 	}
 
-	recipe.Id = recipeId
+	recipe.Id = id
 
 	return nil
 }
@@ -63,24 +60,21 @@ func (recipe *Recipe) Save() *errors.RestErr {
 func (recipe *Recipe) SaveIngredients() *errors.RestErr {
 	stmt, err := recipes_db.Client.Prepare(queryInsertIngredient)
 	if err != nil {
-		return errors.NewInternalServerError(err.Error())
+		return errors.NewInternalServerError(
+			fmt.Sprintf("failed to preprae ingredeints query: %s", err.Error()))
 	}
 	defer stmt.Close()
 
 	for i := range recipe.Ingredients {
-		insertResult, err := stmt.Exec(recipe.Ingredients[i].ServingSize, recipe.Ingredients[i].Item)
-		if err != nil {
-			return errors.NewInternalServerError(
-				fmt.Sprintf("failed to save ingredient: %s", err.Error()))
-		}
-		ingredientId, err := insertResult.LastInsertId()
+		var id int64
+		err := stmt.QueryRow(recipe.Ingredients[i].ServingSize, recipe.Ingredients[i].Item).Scan(&id)
 		if err != nil {
 			return errors.NewInternalServerError(
 				fmt.Sprintf("failed to save ingredient: %s", err.Error()))
 		}
 
-		recipe.Ingredients[i].Id = ingredientId
-		if err := saveRecipeIngredient(recipe.Id, ingredientId); err != nil {
+		recipe.Ingredients[i].Id = id
+		if err := saveRecipeIngredient(recipe.Id, id); err != nil {
 			return errors.NewInternalServerError(
 				fmt.Sprintf("failed to save ingredient: %s", err))
 		}
@@ -92,7 +86,8 @@ func (recipe *Recipe) SaveIngredients() *errors.RestErr {
 func saveRecipeIngredient(recipeId, ingredientId int64) *errors.RestErr {
 	stmt, err := recipes_db.Client.Prepare(queryInsertLookup)
 	if err != nil {
-		return errors.NewInternalServerError(err.Error())
+		return errors.NewInternalServerError(
+			fmt.Sprintf("failed to prepare recipe to ingredients query: %s", err.Error()))
 	}
 	defer stmt.Close()
 

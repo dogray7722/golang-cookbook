@@ -3,7 +3,6 @@ package recipes_db
 import (
 	"database/sql"
 	"fmt"
-	"github.com/dogray7722/golang-cookbook_dogray7722/domain/recipes"
 	"os"
 
 	_ "github.com/lib/pq"
@@ -25,10 +24,6 @@ var (
 	password = os.Getenv(postgres_password)
 	dbname   = os.Getenv(postgres_dbname)
 )
-
-func SaveRecipe(recipe recipes.Recipe) {
-
-}
 
 func init() {
 	psqlInfo := fmt.Sprintf("host=%s port=%s user=%s "+"password=%s dbname=%s sslmode=disable",
