@@ -10,6 +10,10 @@ func CreateRecipe(recipe recipes.Recipe) (*recipes.Recipe, *errors.RestErr) {
 		return nil, err
 	}
 
+	if err := recipe.SaveIngredients(); err != nil {
+		return nil, err
+	}
+
 	return &recipe, nil
 }
 

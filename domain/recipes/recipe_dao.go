@@ -7,7 +7,8 @@ import (
 )
 
 const (
-	queryInsertRecipe = "INSERT INTO recipes(name, ingredients, instructions, date_created, status) VALUES($1, $2, $3, $4, $5);"
+	queryInsertRecipe     = "INSERT INTO recipes(name, instructions, date_created, status) VALUES($1, $2, $3, $4);"
+	queryInsertIngredient = "INSERT INTO ingredients(serving_size, item, date_created) VALUES($1, $2, $3);"
 )
 
 var (
@@ -54,6 +55,34 @@ func (recipe *Recipe) Save() *errors.RestErr {
 	}
 
 	recipe.Id = recipeId
+
+	return nil
+}
+
+func (recipe *Recipe) SaveIngredients() *errors.RestErr {
+	stmt, err := recipes_db.Client.Prepare(queryInsertIngredient)
+	if err != nil {
+		return errors.NewInternalServerError(err.Error())
+	}
+	defer stmt.Close()
+
+	for i := range recipe.Ingredients {
+		insertResult, err := stmt.Exec(recipe.Ingredients[i].ServingSize, recipe.Ingredients[i].Item)
+		if err != nil {
+			return errors.NewInternalServerError(
+				fmt.Sprintf("failed to save ingredient: %s", err.Error()))
+		}
+		ingredientId, err := insertResult.LastInsertId()
+		if err != nil {
+			return errors.NewInternalServerError(
+				fmt.Sprintf("failed to save ingredient: %s", err.Error()))
+		}
+
+		recipe.Ingredients[i].Id = ingredientId
+		//also need to insert the values into the lookup table
+		//can call that from here
+
+	}
 
 	return nil
 }

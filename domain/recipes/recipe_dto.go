@@ -10,6 +10,7 @@ type Recipe struct {
 }
 
 type Ingredient struct {
+	Id          int64  `json:"id"`
 	ServingSize string `json:"serving_size"`
 	Item        string `json:"item"`
 }
