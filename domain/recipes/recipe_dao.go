@@ -12,32 +12,32 @@ const (
 	queryInsertIngredient = "INSERT INTO ingredients(serving_size, item) VALUES($1, $2) RETURNING id;"
 	queryInsertLookup     = "INSERT INTO recipes_to_ingredients(recipe_id, ingredient_id) VALUES($1, $2);"
 	indexUniqueRecipeName = "constraint_name"
+	queryGetRecipe        = "SELECT id, name, instructions, date_created, status FROM recipes WHERE id = $1"
+	errorNoRows           = "no rows in result set"
 )
 
-//var (
-//	recipesDB = make(map[int64]*Recipe)
-//)
+func (recipe *Recipe) Get() *errors.RestErr {
+	stmt, err := recipes_db.Client.Prepare(queryGetRecipe)
+	if err != nil {
+		return errors.NewInternalServerError(
+			fmt.Sprintf("failed to prepare get recipe statement: %s", err.Error()))
+	}
+	defer stmt.Close()
 
-//func (recipe *Recipe) Get() *errors.RestErr {
-//	newClient := recipes_db.Client
-//	if err := newClient.Ping(); err != nil {
-//		panic(err)
-//	}
-//
-//	result := recipesDB[recipe.Id]
-//	if result == nil {
-//		return errors.NewNotFoundError(fmt.Sprintf("recipe %d not found", recipe.Id))
-//	}
-//
-//	recipe.Id = result.Id
-//	recipe.Name = result.Name
-//	recipe.Ingredients = result.Ingredients
-//	recipe.Instructions = result.Instructions
-//	recipe.DateCreated = result.DateCreated
-//	recipe.Status = result.Status
-//
-//	return nil
-//}
+	result := stmt.QueryRow(recipe.Id)
+	if err := result.Scan(&recipe.Id, &recipe.Name, &recipe.Instructions, &recipe.Status, &recipe.DateCreated); err != nil {
+		if strings.Contains(err.Error(), errorNoRows) {
+			return errors.NewNotFoundError(fmt.Sprintf(
+				"recipe id %d not found", recipe.Id))
+		}
+		fmt.Println(err)
+		return errors.NewInternalServerError(
+			fmt.Sprintf("error when trying to get recipe %d: %s", recipe.Id, err.Error()))
+	}
+
+	return nil
+
+}
 
 func (recipe *Recipe) Save() *errors.RestErr {
 	stmt, err := recipes_db.Client.Prepare(queryInsertRecipe)

@@ -6,6 +6,7 @@ import (
 	"github.com/dogray7722/golang-cookbook_dogray7722/utils/errors"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strconv"
 )
 
 func Create(c *gin.Context) {
@@ -28,20 +29,20 @@ func List(c *gin.Context) {
 
 }
 
-//func Get(c *gin.Context) {
-//	recipeId, recipeErr := strconv.ParseInt(c.Param("recipe_id"), 10, 64)
-//	if recipeErr != nil {
-//		err := errors.NewBadRequestError("invalid recipe id")
-//		c.JSON(err.Status, err)
-//		return
-//	}
-//	recipe, getErr := service.GetRecipe(recipeId)
-//	if getErr != nil {
-//		c.JSON(getErr.Status, getErr)
-//		return
-//	}
-//	c.JSON(http.StatusOK, recipe)
-//}
+func Get(c *gin.Context) {
+	recipeId, recipeErr := strconv.ParseInt(c.Param("recipe_id"), 10, 64)
+	if recipeErr != nil {
+		err := errors.NewBadRequestError("invalid recipe id")
+		c.JSON(err.Status, err)
+		return
+	}
+	recipe, getErr := service.GetRecipe(recipeId)
+	if getErr != nil {
+		c.JSON(getErr.Status, getErr)
+		return
+	}
+	c.JSON(http.StatusOK, recipe)
+}
 
 func Update(c *gin.Context) {
 	//TODO Implement
