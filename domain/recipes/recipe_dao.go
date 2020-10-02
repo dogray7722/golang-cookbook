@@ -11,6 +11,7 @@ const (
 	queryInsertRecipe     = "INSERT INTO recipes(name, instructions, status) VALUES($1, $2, $3) RETURNING id;"
 	queryInsertIngredient = "INSERT INTO ingredients(serving_size, item) VALUES($1, $2) RETURNING id;"
 	queryInsertLookup     = "INSERT INTO recipes_to_ingredients(recipe_id, ingredient_id) VALUES($1, $2);"
+	indexUniqueRecipeName = "constraint_name"
 )
 
 //var (
@@ -49,7 +50,7 @@ func (recipe *Recipe) Save() *errors.RestErr {
 	var id int64
 	err = stmt.QueryRow(recipe.Name, recipe.Instructions, recipe.Status).Scan(&id)
 	if err != nil {
-		if strings.Contains(err.Error(), "constraint_name") {
+		if strings.Contains(err.Error(), indexUniqueRecipeName) {
 			return errors.NewBadRequestError(fmt.Sprintf(
 				"recipe name %s already exists", recipe.Name))
 		}
