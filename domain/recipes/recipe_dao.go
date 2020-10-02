@@ -67,7 +67,7 @@ func (recipe *Recipe) SaveIngredients() *errors.RestErr {
 	stmt, err := recipes_db.Client.Prepare(queryInsertIngredient)
 	if err != nil {
 		return errors.NewInternalServerError(
-			fmt.Sprintf("failed to preprae ingredeints query: %s", err.Error()))
+			fmt.Sprintf("failed to prepare ingredients query: %s", err.Error()))
 	}
 	defer stmt.Close()
 
