@@ -11,11 +11,13 @@ const (
 	indexUniqueRecipeName = "constraint_name"
 	errorNoRows           = "no rows in result set"
 
-	queryInsertRecipe           = "INSERT INTO recipes(name, instructions, status) VALUES($1, $2, $3) RETURNING id;"
+	queryInsertRecipe = "INSERT INTO recipes(name, instructions, status) VALUES($1, $2, $3) RETURNING id;"
+	queryGetRecipe    = "SELECT id, name, instructions, status, date_created FROM recipes WHERE id = $1"
+
 	queryInsertIngredient       = "INSERT INTO ingredients(serving_size, item) VALUES($1, $2) RETURNING id;"
-	queryInsertLookup           = "INSERT INTO recipes_to_ingredients(recipe_id, ingredient_id) VALUES($1, $2);"
-	queryGetRecipe              = "SELECT id, name, instructions, status, date_created FROM recipes WHERE id = $1"
 	queryGetIngredientsByRecipe = `SELECT id, serving_size, item FROM ingredients WHERE id IN (SELECT ingredient_id FROM recipes_to_ingredients WHERE recipe_id = $1)`
+
+	queryInsertLookup = "INSERT INTO recipes_to_ingredients(recipe_id, ingredient_id) VALUES($1, $2);"
 )
 
 func (recipe *Recipe) Get() *errors.RestErr {
