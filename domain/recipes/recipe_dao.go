@@ -81,7 +81,8 @@ func (recipe *Recipe) SaveIngredients() *errors.RestErr {
 
 		recipe.Ingredients[i].Id = ingredientId
 		if err := saveRecipeIngredient(recipe.Id, ingredientId); err != nil {
-			return err
+			return errors.NewInternalServerError(
+				fmt.Sprintf("failed to save ingredient: %s", err))
 		}
 	}
 
