@@ -12,7 +12,7 @@ const (
 	queryInsertIngredient = "INSERT INTO ingredients(serving_size, item) VALUES($1, $2) RETURNING id;"
 	queryInsertLookup     = "INSERT INTO recipes_to_ingredients(recipe_id, ingredient_id) VALUES($1, $2);"
 	indexUniqueRecipeName = "constraint_name"
-	queryGetRecipe        = "SELECT id, name, instructions, date_created, status FROM recipes WHERE id = $1"
+	queryGetRecipe        = "SELECT id, name, instructions, status, date_created FROM recipes WHERE id = $1"
 	errorNoRows           = "no rows in result set"
 )
 
