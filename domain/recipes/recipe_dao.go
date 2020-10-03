@@ -88,6 +88,7 @@ func (recipe *Recipe) Save() *errors.RestErr {
 	var id int64
 	err = stmt.QueryRow(recipe.Name, recipe.Instructions, recipe.Status).Scan(&id)
 	if err != nil {
+		//TODO Refactor to use error code
 		if strings.Contains(err.Error(), indexUniqueRecipeName) {
 			return errors.NewBadRequestError(fmt.Sprintf(
 				"recipe name %s already exists", recipe.Name))
