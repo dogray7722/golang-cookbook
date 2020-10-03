@@ -62,6 +62,7 @@ func getIngredients(recipeID int64) ([]Ingredient, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 
 	results := []Ingredient{}
 	for rows.Next() {
