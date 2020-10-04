@@ -28,8 +28,8 @@ func GetRecipe(recipeId int64) (*recipes.Recipe, *errors.RestErr) {
 	return result, nil
 }
 
-func ListRecipes() ([]*recipes.Recipe, *errors.RestErr) {
-	results := []*recipes.Recipe{}
+func ListRecipes() (*recipes.Recipe, *errors.RestErr) {
+	results := &recipes.Recipe{}
 	if err := results.List(); err != nil {
 		return nil, err
 	}
