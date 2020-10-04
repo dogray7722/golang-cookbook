@@ -26,7 +26,13 @@ func Create(c *gin.Context) {
 }
 
 func List(c *gin.Context) {
+	recipes, listErr := service.ListRecipes()
+	if listErr != nil {
+		c.JSON(listErr.Status, listErr)
+		return
+	}
 
+	c.JSON(http.StatusOK, recipes)
 }
 
 func Get(c *gin.Context) {

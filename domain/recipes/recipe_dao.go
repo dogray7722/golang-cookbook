@@ -13,6 +13,7 @@ const (
 
 	queryInsertRecipe = "INSERT INTO recipes(name, instructions, status) VALUES($1, $2, $3) RETURNING id;"
 	queryGetRecipe    = "SELECT id, name, instructions, status, date_created FROM recipes WHERE id = $1"
+	queryListRecipes  = "SELECT id, name, instructions, status, date_created FROM recipes"
 
 	queryInsertIngredient       = "INSERT INTO ingredients(serving_size, item) VALUES($1, $2) RETURNING id;"
 	queryGetIngredientsByRecipe = `SELECT id, serving_size, item FROM ingredients WHERE id IN (SELECT ingredient_id FROM recipes_to_ingredients WHERE recipe_id = $1)`
@@ -34,7 +35,7 @@ func (recipe *Recipe) Get() *errors.RestErr {
 			return errors.NewNotFoundError(fmt.Sprintf(
 				"recipe id %d not found", recipe.Id))
 		}
-		fmt.Println(err)
+
 		return errors.NewInternalServerError(
 			fmt.Sprintf("error when trying to get recipe %d: %s", recipe.Id, err.Error()))
 	}
@@ -141,6 +142,43 @@ func saveRecipeIngredient(recipeId, ingredientId int64) *errors.RestErr {
 	if err != nil {
 		return errors.NewInternalServerError(
 			fmt.Sprintf("failed to save recipes to ingredients: %s", err.Error()))
+	}
+
+	return nil
+}
+
+func (recipe *Recipe) List() *errors.RestErr {
+	stmt, err := recipes_db.Client.Prepare(queryListRecipes)
+	if err != nil {
+		return errors.NewInternalServerError(
+			fmt.Sprintf("failed to prepare list recipes statement: %s", err.Error()))
+	}
+	defer stmt.Close()
+
+	var recipes []*Recipe
+	rows, err := stmt.Query()
+	if err != nil {
+		return errors.NewInternalServerError(
+			fmt.Sprintf("failed to list recipes: %s", err.Error()))
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		err := rows.Scan(&recipe.Id, &recipe.Name, &recipe.Instructions, &recipe.Status, &recipe.DateCreated)
+		if err != nil {
+			return errors.NewInternalServerError(
+				fmt.Sprintf("there was a problem scanning rows for recipe list: %s", err.Error()))
+		}
+
+		recipeIngredeints, err := getIngredients(recipe.Id)
+		if err != nil {
+			return errors.NewInternalServerError(
+				fmt.Sprintf("there was a problem retrieving recipe ingredients: %s", err.Error()))
+		}
+
+		recipe.Ingredients = recipeIngredeints
+
+		recipes = append(recipes, recipe)
 	}
 
 	return nil
