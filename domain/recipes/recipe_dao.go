@@ -236,7 +236,7 @@ func (recipe *Recipe) Update() *errors.RestErr {
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(recipe.Name, recipe.Instructions, recipe.Status)
+	_, err = stmt.Exec(recipe.Name, recipe.Instructions, recipe.Status, recipe.Id)
 	if err != nil {
 		return errors.NewInternalServerError(
 			fmt.Sprintf("failed to update recipe: %s", err.Error()))
