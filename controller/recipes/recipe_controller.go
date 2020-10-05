@@ -51,7 +51,28 @@ func Get(c *gin.Context) {
 }
 
 func Update(c *gin.Context) {
-	//TODO Implement
+	recipeId, recipeErr := strconv.ParseInt(c.Param("recipe_id"), 10, 64)
+	if recipeErr != nil {
+		err := errors.NewBadRequestError("recipe id should be a number")
+		c.JSON(err.Status, err)
+		return
+	}
+
+	var recipe recipes.Recipe
+	if err := c.ShouldBindJSON(&recipe); err != nil {
+		restErr := errors.NewBadRequestError("invalid json body")
+		c.JSON(restErr.Status, restErr)
+		return
+	}
+
+	recipe.Id = recipeId
+
+	result, err := service.UpdateRecipe(recipe)
+	if err != nil {
+		c.JSON(err.Status, err)
+		return
+	}
+	c.JSON(http.StatusOK, result)
 }
 
 func Delete(c *gin.Context) {

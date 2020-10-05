@@ -14,11 +14,14 @@ const (
 	queryInsertRecipe = "INSERT INTO recipes(name, instructions, status) VALUES($1, $2, $3) RETURNING id;"
 	queryGetRecipe    = "SELECT id, name, instructions, status, date_created FROM recipes WHERE id = $1"
 	queryListRecipes  = "SELECT id, name, instructions, status, date_created FROM recipes"
+	queryUpdateRecipe = "UPDATE recipes SET name=$1, instructions=$2, status=$3 WHERE id = $4"
 
-	queryInsertIngredient       = "INSERT INTO ingredients(serving_size, item) VALUES($1, $2) RETURNING id;"
-	queryGetIngredientsByRecipe = `SELECT id, serving_size, item FROM ingredients WHERE id IN (SELECT ingredient_id FROM recipes_to_ingredients WHERE recipe_id = $1)`
+	queryInsertIngredient          = "INSERT INTO ingredients(serving_size, item) VALUES($1, $2) RETURNING id;"
+	queryGetIngredientsByRecipe    = `SELECT id, serving_size, item FROM ingredients WHERE id IN (SELECT ingredient_id FROM recipes_to_ingredients WHERE recipe_id = $1)`
+	queryDeleteIngredientsByRecipe = `DELETE FROM ingredients WHERE id IN (SELECT ingredient_id FROM recipes_to_ingredients WHERE recipe_id = $1)`
 
 	queryInsertLookup = "INSERT INTO recipes_to_ingredients(recipe_id, ingredient_id) VALUES($1, $2);"
+	queryDeleteLookup = "DELETE FROM recipes_to_ingredients WHERE recipe_id = $1"
 )
 
 func (recipe *Recipe) Get() *errors.RestErr {
@@ -78,6 +81,30 @@ func getIngredients(recipeID int64) ([]Ingredient, error) {
 	return results, nil
 }
 
+func (recipe *Recipe) DeleteIngredients(recipeID int64) *errors.RestErr {
+
+	if err := recipe.deleteRecipeIngredient(recipeID); err != nil {
+		return errors.NewInternalServerError(
+			fmt.Sprintf("failed to delete recipe ingredient relationships: %s", err))
+	}
+
+	stmt, err := recipes_db.Client.Prepare(queryDeleteIngredientsByRecipe)
+	if err != nil {
+		return errors.NewInternalServerError(
+			fmt.Sprintf("failed to prepare delete recipe ingredients query: %s", err.Error()))
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(recipeID)
+	if err != nil {
+		return errors.NewInternalServerError(
+			fmt.Sprintf("failed to delete ingredients by recipe: %s", err.Error()))
+	}
+
+	return nil
+
+}
+
 func (recipe *Recipe) Save() *errors.RestErr {
 	stmt, err := recipes_db.Client.Prepare(queryInsertRecipe)
 	if err != nil {
@@ -121,16 +148,16 @@ func (recipe *Recipe) SaveIngredients() *errors.RestErr {
 		}
 
 		recipe.Ingredients[i].Id = id
-		if err := saveRecipeIngredient(recipe.Id, id); err != nil {
+		if err := recipe.saveRecipeIngredient(recipe.Id, id); err != nil {
 			return errors.NewInternalServerError(
-				fmt.Sprintf("failed to save ingredient: %s", err))
+				fmt.Sprintf("failed to save recipe ingredients: %s", err))
 		}
 	}
 
 	return nil
 }
 
-func saveRecipeIngredient(recipeId, ingredientId int64) *errors.RestErr {
+func (recipe *Recipe) saveRecipeIngredient(recipeId, ingredientId int64) *errors.RestErr {
 	stmt, err := recipes_db.Client.Prepare(queryInsertLookup)
 	if err != nil {
 		return errors.NewInternalServerError(
@@ -142,6 +169,23 @@ func saveRecipeIngredient(recipeId, ingredientId int64) *errors.RestErr {
 	if err != nil {
 		return errors.NewInternalServerError(
 			fmt.Sprintf("failed to save recipes to ingredients: %s", err.Error()))
+	}
+
+	return nil
+}
+
+func (recipe *Recipe) deleteRecipeIngredient(recipeId int64) *errors.RestErr {
+	stmt, err := recipes_db.Client.Prepare(queryDeleteLookup)
+	if err != nil {
+		return errors.NewInternalServerError(
+			fmt.Sprintf("failed to prepare recipe to ingrdient delete statement: %s", err.Error()))
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(recipeId)
+	if err != nil {
+		return errors.NewInternalServerError(
+			fmt.Sprintf("failed to delete recipe to ingredients relationship: %s", err.Error()))
 	}
 
 	return nil
@@ -179,6 +223,28 @@ func (recipe *Recipe) List() *errors.RestErr {
 		recipe.Ingredients = recipeIngredeints
 
 		recipes = append(recipes, recipe)
+	}
+
+	return nil
+}
+
+func (recipe *Recipe) Update() *errors.RestErr {
+	stmt, err := recipes_db.Client.Prepare(queryUpdateRecipe)
+	if err != nil {
+		return errors.NewInternalServerError(
+			fmt.Sprintf("failed to prepare update recipe statement: %s", err.Error()))
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(recipe.Name, recipe.Instructions, recipe.Status)
+	if err != nil {
+		return errors.NewInternalServerError(
+			fmt.Sprintf("failed to update recipe: %s", err.Error()))
+	}
+
+	if err := recipe.SaveIngredients(); err != nil {
+		return errors.NewInternalServerError(
+			fmt.Sprintf("failed to save ingredeints: %s", err))
 	}
 
 	return nil

@@ -33,6 +33,29 @@ func ListRecipes() (*recipes.Recipe, *errors.RestErr) {
 	if err := results.List(); err != nil {
 		return nil, err
 	}
-
 	return results, nil
+}
+
+func UpdateRecipe(recipe recipes.Recipe) (*recipes.Recipe, *errors.RestErr) {
+	current, err := GetRecipe(recipe.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	err = current.DeleteIngredients(recipe.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	current.Name = recipe.Name
+	current.Instructions = recipe.Instructions
+	current.Ingredients = recipe.Ingredients
+	current.Status = recipe.Status
+
+	err = current.Update()
+	if err != nil {
+		return nil, err
+	}
+
+	return current, nil
 }
