@@ -12,16 +12,17 @@ const (
 	errorNoRows           = "no rows in result set"
 
 	queryInsertRecipe = "INSERT INTO recipes(name, instructions, status) VALUES($1, $2, $3) RETURNING id;"
-	queryGetRecipe    = "SELECT id, name, instructions, status, date_created FROM recipes WHERE id = $1"
-	queryListRecipes  = "SELECT id, name, instructions, status, date_created FROM recipes"
-	queryUpdateRecipe = "UPDATE recipes SET name=$1, instructions=$2, status=$3 WHERE id = $4"
+	queryGetRecipe    = "SELECT id, name, instructions, status, date_created FROM recipes WHERE id = $1;"
+	queryListRecipes  = "SELECT id, name, instructions, status, date_created FROM recipes;"
+	queryUpdateRecipe = "UPDATE recipes SET name=$1, instructions=$2, status=$3 WHERE id = $4;"
+	queryDeleteRecipe = "DELETE FROM recipes WHERE id=$1;"
 
 	queryInsertIngredient          = "INSERT INTO ingredients(serving_size, item) VALUES($1, $2) RETURNING id;"
-	queryGetIngredientsByRecipe    = `SELECT id, serving_size, item FROM ingredients WHERE id IN (SELECT ingredient_id FROM recipes_to_ingredients WHERE recipe_id = $1)`
-	queryDeleteIngredientsByRecipe = `DELETE FROM ingredients WHERE id IN (SELECT ingredient_id FROM recipes_to_ingredients WHERE recipe_id = $1)`
+	queryGetIngredientsByRecipe    = `SELECT id, serving_size, item FROM ingredients WHERE id IN (SELECT ingredient_id FROM recipes_to_ingredients WHERE recipe_id = $1);`
+	queryDeleteIngredientsByRecipe = `DELETE FROM ingredients WHERE id IN (SELECT ingredient_id FROM recipes_to_ingredients WHERE recipe_id = $1);`
 
 	queryInsertLookup = "INSERT INTO recipes_to_ingredients(recipe_id, ingredient_id) VALUES($1, $2);"
-	queryDeleteLookup = "DELETE FROM recipes_to_ingredients WHERE recipe_id = $1"
+	queryDeleteLookup = "DELETE FROM recipes_to_ingredients WHERE recipe_id = $1;"
 )
 
 func (recipe *Recipe) Get() *errors.RestErr {
@@ -79,30 +80,6 @@ func getIngredients(recipeID int64) ([]Ingredient, error) {
 	}
 
 	return results, nil
-}
-
-func (recipe *Recipe) DeleteIngredients(recipeID int64) *errors.RestErr {
-
-	if err := recipe.deleteRecipeIngredient(recipeID); err != nil {
-		return errors.NewInternalServerError(
-			fmt.Sprintf("failed to delete recipe ingredient relationships: %s", err))
-	}
-
-	stmt, err := recipes_db.Client.Prepare(queryDeleteIngredientsByRecipe)
-	if err != nil {
-		return errors.NewInternalServerError(
-			fmt.Sprintf("failed to prepare delete recipe ingredients query: %s", err.Error()))
-	}
-	defer stmt.Close()
-
-	_, err = stmt.Exec(recipeID)
-	if err != nil {
-		return errors.NewInternalServerError(
-			fmt.Sprintf("failed to delete ingredients by recipe: %s", err.Error()))
-	}
-
-	return nil
-
 }
 
 func (recipe *Recipe) Save() *errors.RestErr {
@@ -172,6 +149,52 @@ func (recipe *Recipe) saveRecipeIngredient(recipeId, ingredientId int64) *errors
 	}
 
 	return nil
+}
+
+func (recipe *Recipe) DeleteRecipe(recipeId int64) *errors.RestErr {
+	if err := recipe.DeleteIngredients(recipeId); err != nil {
+		return errors.NewInternalServerError(
+			fmt.Sprintf("failed to delete recipe ingredients"))
+	}
+
+	stmt, err := recipes_db.Client.Prepare(queryDeleteRecipe)
+	if err != nil {
+		return errors.NewInternalServerError(
+			fmt.Sprintf("failed to prepare delete recipe query: %s", err.Error()))
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(recipeId)
+	if err != nil {
+		return errors.NewInternalServerError(
+			fmt.Sprintf("failed to delete recipe: %s", err.Error()))
+	}
+	return nil
+
+}
+
+func (recipe *Recipe) DeleteIngredients(recipeID int64) *errors.RestErr {
+
+	if err := recipe.deleteRecipeIngredient(recipeID); err != nil {
+		return errors.NewInternalServerError(
+			fmt.Sprintf("failed to delete recipe ingredient relationships: %s", err))
+	}
+
+	stmt, err := recipes_db.Client.Prepare(queryDeleteIngredientsByRecipe)
+	if err != nil {
+		return errors.NewInternalServerError(
+			fmt.Sprintf("failed to prepare delete recipe ingredients query: %s", err.Error()))
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(recipeID)
+	if err != nil {
+		return errors.NewInternalServerError(
+			fmt.Sprintf("failed to delete ingredients by recipe: %s", err.Error()))
+	}
+
+	return nil
+
 }
 
 func (recipe *Recipe) deleteRecipeIngredient(recipeId int64) *errors.RestErr {

@@ -59,3 +59,13 @@ func UpdateRecipe(recipe recipes.Recipe) (*recipes.Recipe, *errors.RestErr) {
 
 	return current, nil
 }
+
+func DeleteRecipe(recipeId int64) *errors.RestErr {
+	if recipeId <= 0 {
+		return errors.NewBadRequestError("invalid recipe id")
+	}
+	recipe := &recipes.Recipe{
+		Id: recipeId,
+	}
+	return recipe.DeleteRecipe(recipeId)
+}

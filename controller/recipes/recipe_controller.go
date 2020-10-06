@@ -76,5 +76,18 @@ func Update(c *gin.Context) {
 }
 
 func Delete(c *gin.Context) {
-	//TODO Implement
+	recipeId, recipeErr := strconv.ParseInt(c.Param("recipe_id"), 10, 64)
+	if recipeErr != nil {
+		err := errors.NewBadRequestError("invalid recipe id")
+		c.JSON(err.Status, err)
+		return
+	}
+
+	if deleteErr := service.DeleteRecipe(recipeId); deleteErr != nil {
+		c.JSON(deleteErr.Status, deleteErr)
+		return
+	}
+
+	c.JSON(http.StatusOK, map[string]string{"status": "deleted"})
+
 }
