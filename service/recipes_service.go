@@ -28,11 +28,13 @@ func GetRecipe(recipeId int64) (*recipes.Recipe, *errors.RestErr) {
 	return result, nil
 }
 
-func ListRecipes() ([]*recipes.Recipe, *errors.RestErr) {
-	rec := recipes.Recipe{}
-	if err := rec.List(); err != nil {
+func ListRecipes() ([]recipes.Recipe, *errors.RestErr) {
+	dao := &recipes.Recipe{}
+	recipes, err := dao.List()
+	if err != nil {
 		return nil, err
 	}
+	return recipes, nil
 }
 
 func UpdateRecipe(recipe recipes.Recipe) (*recipes.Recipe, *errors.RestErr) {
