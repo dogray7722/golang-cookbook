@@ -222,7 +222,7 @@ func (recipe *Recipe) List() *errors.RestErr {
 	}
 	defer stmt.Close()
 
-	var recipes []*Recipe
+	var recipes []Recipe
 	rows, err := stmt.Query()
 	if err != nil {
 		return errors.NewInternalServerError(
@@ -237,15 +237,19 @@ func (recipe *Recipe) List() *errors.RestErr {
 				fmt.Sprintf("there was a problem scanning rows for recipe list: %s", err.Error()))
 		}
 
-		recipeIngredeints, err := getIngredients(recipe.Id)
+		recipeIngredients, err := getIngredients(recipe.Id)
 		if err != nil {
 			return errors.NewInternalServerError(
 				fmt.Sprintf("there was a problem retrieving recipe ingredients: %s", err.Error()))
 		}
 
-		recipe.Ingredients = recipeIngredeints
+		recipe.Ingredients = recipeIngredients
 
-		recipes = append(recipes, recipe)
+		recipes = append(recipes, *recipe)
+
+		if len(recipes) == 0 {
+			return errors.NewNotFoundError("no recipes found")
+		}
 	}
 
 	return nil
