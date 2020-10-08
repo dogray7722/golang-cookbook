@@ -1,7 +1,7 @@
 # golang-cookbook
 
 ## Purpose
-This application demonstrates knowledge of creating a RESTFull Web API using GO.  It incorporates the gin/gonic web server package, and uses the pq postgres package for the database/sql backend.
+This application demonstrates knowledge of creating a REST-Full Web API using GO.  It incorporates the gin/gonic web server package, and uses the pq postgres driver for the database/sql instance.
 
 ## Instructions
 - Run the migration script in datasources/postgres/recipes_db/db_migrations/initial_migration_up.sql
