@@ -175,11 +175,6 @@ func (recipe *Recipe) DeleteRecipe(recipeId int64) *errors.RestErr {
 
 func (recipe *Recipe) DeleteIngredients(recipeID int64) *errors.RestErr {
 
-	if err := recipe.deleteRecipeIngredient(recipeID); err != nil {
-		return errors.NewInternalServerError(
-			fmt.Sprintf("failed to delete recipe ingredient relationships: %s", err))
-	}
-
 	stmt, err := recipes_db.Client.Prepare(queryDeleteIngredientsByRecipe)
 	if err != nil {
 		return errors.NewInternalServerError(
@@ -191,6 +186,11 @@ func (recipe *Recipe) DeleteIngredients(recipeID int64) *errors.RestErr {
 	if err != nil {
 		return errors.NewInternalServerError(
 			fmt.Sprintf("failed to delete ingredients by recipe: %s", err.Error()))
+	}
+
+	if err := recipe.deleteRecipeIngredient(recipeID); err != nil {
+		return errors.NewInternalServerError(
+			fmt.Sprintf("failed to delete recipe ingredient relationships: %s", err))
 	}
 
 	return nil
