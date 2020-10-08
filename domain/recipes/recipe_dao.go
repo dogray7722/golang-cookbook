@@ -214,10 +214,10 @@ func (recipe *Recipe) deleteRecipeIngredient(recipeId int64) *errors.RestErr {
 	return nil
 }
 
-func (recipe *Recipe) List() *errors.RestErr {
+func (recipe *Recipe) List() ([]Recipe, *errors.RestErr) {
 	stmt, err := recipes_db.Client.Prepare(queryListRecipes)
 	if err != nil {
-		return errors.NewInternalServerError(
+		return nil, errors.NewInternalServerError(
 			fmt.Sprintf("failed to prepare list recipes statement: %s", err.Error()))
 	}
 	defer stmt.Close()
@@ -225,7 +225,7 @@ func (recipe *Recipe) List() *errors.RestErr {
 	var recipes []Recipe
 	rows, err := stmt.Query()
 	if err != nil {
-		return errors.NewInternalServerError(
+		return nil, errors.NewInternalServerError(
 			fmt.Sprintf("failed to list recipes: %s", err.Error()))
 	}
 	defer rows.Close()
@@ -233,13 +233,13 @@ func (recipe *Recipe) List() *errors.RestErr {
 	for rows.Next() {
 		err := rows.Scan(&recipe.Id, &recipe.Name, &recipe.Instructions, &recipe.Status, &recipe.DateCreated)
 		if err != nil {
-			return errors.NewInternalServerError(
+			return nil, errors.NewInternalServerError(
 				fmt.Sprintf("there was a problem scanning rows for recipe list: %s", err.Error()))
 		}
 
 		recipeIngredients, err := getIngredients(recipe.Id)
 		if err != nil {
-			return errors.NewInternalServerError(
+			return nil, errors.NewInternalServerError(
 				fmt.Sprintf("there was a problem retrieving recipe ingredients: %s", err.Error()))
 		}
 
@@ -248,11 +248,11 @@ func (recipe *Recipe) List() *errors.RestErr {
 		recipes = append(recipes, *recipe)
 
 		if len(recipes) == 0 {
-			return errors.NewNotFoundError("no recipes found")
+			return nil, errors.NewNotFoundError("no recipes found")
 		}
 	}
 
-	return nil
+	return recipes, nil
 }
 
 func (recipe *Recipe) Update() *errors.RestErr {
