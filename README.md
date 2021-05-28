@@ -3,15 +3,21 @@
 ## Purpose
 This application demonstrates knowledge of creating a REST-Full Web API using GO.  It incorporates the gin/gonic web server package, and uses the pq postgres driver for the database/sql instance.
 
-## Instructions
-- Run the migration script in datasources/postgres/recipes_db/db_migrations/initial_migration_up.sql
+## Setup
+- Configure the following local environment variables to set up your database connection:
+    - postgres_host
+    - postgres_port
+    - postgres_user
+    - postgres_password
+    - postgres_dbname 
+- Connect to the database and run the migration script in datasources/postgres/recipes_db/db_migrations/initial_migration_up.sql
 - Run the application locally (AWS instance is forthcoming)
 
 ## Testing CRUD Operations
 
 #### Create
 Call the create endpoint at `localhost:8080/recipes`
-Send a json request in the following format:
+Send a json request to create a recipe in the following format:
 ```
 {
     "name": "Albondigas",
