@@ -26,6 +26,7 @@ func Create(c *gin.Context) {
 }
 
 func List(c *gin.Context) {
+	c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
 	recipes, listErr := service.ListRecipes()
 	if listErr != nil {
 		c.JSON(listErr.Status, listErr)
