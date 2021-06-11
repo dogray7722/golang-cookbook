@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container } from '@material-ui/core';
+import { Container, Paper } from '@material-ui/core';
 import Recipes from './components/recipes'
 
 function App() {
@@ -7,7 +7,9 @@ function App() {
   return (
     <Container maxWidth="sm">
       <h1>Go Lang Cookbook</h1>
-      <Recipes />
+      <Paper style={{padding: "20px"}} elevation={5} variant="outlined">
+        <Recipes />
+      </Paper>
     </Container>
   );
 }

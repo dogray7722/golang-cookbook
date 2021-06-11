@@ -1,4 +1,5 @@
 import React, { useEffect, useState }from 'react'
+import { Box } from '@material-ui/core'
 
 const Recipes = () => {
   const [recipes, setRecipes] = useState([])
@@ -15,7 +16,7 @@ const Recipes = () => {
 
 const content = recipes.map(recipe => {
   return (
-  <div key={recipe.id}>
+  <Box component="div" key={recipe.id}>
     <h3>{recipe.name}</h3>
     <ul>
       {recipe.ingredients.map(ingredient => (
@@ -25,7 +26,7 @@ const content = recipes.map(recipe => {
       ))} 
     </ul>
     <p>{recipe.instructions}</p>
-    </div>
+  </Box>
   );
 })
 
