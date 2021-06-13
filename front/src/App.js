@@ -6,7 +6,7 @@ function App() {
 
   return (
     <Container maxWidth="sm">
-      <h1>Go Lang Cookbook</h1>
+        <h1>Golang Cookbook</h1>
       <Paper style={{padding: "20px"}} elevation={5} variant="filled">
         <Recipes />
       </Paper>
