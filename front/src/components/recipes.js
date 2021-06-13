@@ -17,6 +17,7 @@ const Recipes = () => {
 const content = recipes.map(recipe => {
   return (
   <Box component="div" key={recipe.id}>
+
     <h3>{recipe.name}</h3>
     <ul>
       {recipe.ingredients.map(ingredient => (
