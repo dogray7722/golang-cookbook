@@ -5,6 +5,7 @@ import Recipes from './components/recipes'
 function App() {
 
   return (
+    <>
     <Container maxWidth="sm">
         <Typography
             color="primary"
@@ -18,6 +19,9 @@ function App() {
         <Recipes />
       </Paper>
     </Container>
+    
+    </>
+  
   );
 }
 

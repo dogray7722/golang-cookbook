@@ -41,7 +41,7 @@ const content = recipes.map(recipe => {
       <Typography
           variant="h3"
           align="center"
-          color="secondary"
+          color="textSecondary"
           gutterBottom
       >
         Recipes
