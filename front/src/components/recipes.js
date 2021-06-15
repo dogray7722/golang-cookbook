@@ -1,12 +1,21 @@
 import React, { useEffect, useState }from 'react'
-import { Box, Typography } from '@material-ui/core'
+import { Card, Typography, makeStyles } from '@material-ui/core'
 
-const Recipes = () => {
+const useStyles = makeStyles({
+  recipeCard: {
+    margin: "10px",
+    padding: "10px"
+  }
+})
+
+export default function Recipes() {
   const [recipes, setRecipes] = useState([])
 
   useEffect(() => {
     loadData();
   }, [])
+
+  const classes = useStyles()
 
   const loadData = async () => {
     const response = await fetch("http://localhost:8080/recipes")
@@ -16,11 +25,15 @@ const Recipes = () => {
 
 const content = recipes.map(recipe => {
   return (
-  <Box component="div" key={recipe.id}>
-
+  <Card
+      raised={true}
+      key={recipe.id}
+      className={classes.recipeCard}
+  >
     <Typography
         variant="h6"
         gutterBottom
+        color="textPrimary"
     >
       {recipe.name}
     </Typography>
@@ -32,7 +45,7 @@ const content = recipes.map(recipe => {
       ))} 
     </ul>
     <p>{recipe.instructions}</p>
-  </Box>
+  </Card>
   );
 })
 
@@ -51,4 +64,3 @@ const content = recipes.map(recipe => {
   )
 }
 
-export default Recipes
