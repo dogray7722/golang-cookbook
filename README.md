@@ -12,4 +12,4 @@ This application demonstrates full stack chops including a REST-Full Web API usi
     - postgres_dbname 
 - Create and connect to the database and run the migration script in datasources/postgres/recipes_db/db_migrations/initial_migration_up.sql
 - Run the application locally
-- Navigate to the front directory and run `npm start`
+- Navigate to `/front` and run `npm start`
