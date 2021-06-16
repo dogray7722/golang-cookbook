@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Paper, Typography } from '@material-ui/core';
+import { Container, Typography } from '@material-ui/core';
 import Recipes from './components/recipes'
 
 function App() {
@@ -13,11 +13,9 @@ function App() {
             align="center"
             gutterBottom
         >
-            Super Dope Cookbook
+            Favorite Recipes
         </Typography>
-      <Paper style={{padding: "20px"}} elevation={5} variant="filled">
         <Recipes />
-      </Paper>
     </Container>
     
     </>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState }from 'react'
-import { Card, Typography, makeStyles } from '@material-ui/core'
+import { Card, CardHeader, Typography, makeStyles } from '@material-ui/core'
 
 const useStyles = makeStyles({
   recipeCard: {
@@ -30,13 +30,13 @@ const content = recipes.map(recipe => {
       key={recipe.id}
       className={classes.recipeCard}
   >
-    <Typography
-        variant="h6"
-        gutterBottom
-        color="textPrimary"
-    >
-      {recipe.name}
-    </Typography>
+      <Typography
+          variant="h6"
+          color="textSecondary"
+      >
+        {recipe.name}
+      </Typography>
+
     <ul>
       {recipe.ingredients.map(ingredient => (
       <li key={ingredient.id}>
@@ -51,14 +51,6 @@ const content = recipes.map(recipe => {
 
   return (
     <>
-      <Typography
-          variant="h3"
-          align="center"
-          color="textSecondary"
-          gutterBottom
-      >
-        Recipes
-      </Typography>
       {content}
     </>
   )
