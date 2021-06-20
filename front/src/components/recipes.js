@@ -1,8 +1,10 @@
 import React, { useEffect, useState }from 'react'
-import {Card, CardHeader, makeStyles, Avatar, CardContent, Typography} from '@material-ui/core'
+import {Avatar, Card, CardActions, CardContent, CardHeader, Collapse, IconButton, makeStyles, Typography } from '@material-ui/core'
 import purple from "@material-ui/core/colors/purple";
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import clsx from 'clsx';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   recipeCard: {
     margin: "10px",
     padding: "10px"
@@ -12,17 +14,32 @@ const useStyles = makeStyles({
   },
   content: {
     padding: "8px"
+  },
+  expand: {
+    transform: 'rotate(0deg)',
+    marginLeft: 'auto',
+    transition: theme.transitions.create('transform', {
+      duration: theme.transitions.duration.shortest,
+    })
+  },
+  expandOpen: {
+    transform: 'rotate(180deg)'
   }
-})
+}))
 
 export default function Recipes() {
+  const classes = useStyles()
   const [recipes, setRecipes] = useState([])
+  const [expandedId, setExpandedId] = useState(-1)
 
   useEffect(() => {
     loadData();
   }, [])
 
-  const classes = useStyles()
+
+  const handleExpandClick = i => {
+    setExpandedId(expandedId === i ? -1 : i)
+  }
 
   const loadData = async () => {
     const response = await fetch("http://localhost:8080/recipes")
@@ -30,7 +47,7 @@ export default function Recipes() {
     setRecipes(data)
   }
 
-const content = recipes.map(recipe => {
+const content = recipes.map((recipe, i) => {
   return (
   <Card
       raised={true}
@@ -48,26 +65,40 @@ const content = recipes.map(recipe => {
         </Avatar>
       }
     />
-    <CardContent className={classes.content}>
-      <Typography variant="subtitle1" color="textPrimary">
-        Ingredients
-      </Typography>
-      <Typography color="textSecondary">
-      <ul style={{listStyle: "none", margin: "3px", fontSize: "14px", fontFamily: "Roboto, Helvetica, Arial, sans-serif"}}>
-        {recipe.ingredients.map(ingredient => (
-            <li key={ingredient.id}>
-              {`${ingredient.serving_size} ${ingredient.item}`}
-            </li>
-        ))}
-      </ul>
-      </Typography>
-      <Typography variant="subtitle1" color="textPrimary">
-        Instructions
-      </Typography>
-      <Typography variant="body2" color="textSecondary" component="p">
-        {recipe.instructions}
-      </Typography>
-    </CardContent>
+    <CardActions>
+      <IconButton
+        className={clsx(classes.expand, {
+          [classes.expandOpen]: expandedId
+        })}
+        onClick={() => handleExpandClick(i)}
+        aria-expanded={expandedId === i}
+        aria-label="show more"
+      >
+        <ExpandMoreIcon />
+      </IconButton>
+    </CardActions>
+    <Collapse in={expandedId === i} timeout="auto" unmountOnExit>
+      <CardContent className={classes.content}>
+        <Typography variant="subtitle1" color="textPrimary">
+          Ingredients
+        </Typography>
+        <Typography color="textSecondary">
+          <ul style={{listStyle: "none", margin: "3px", fontSize: "14px", fontFamily: "Roboto, Helvetica, Arial, sans-serif"}}>
+            {recipe.ingredients.map(ingredient => (
+                <li key={ingredient.id}>
+                  {`${ingredient.serving_size} ${ingredient.item}`}
+                </li>
+            ))}
+          </ul>
+        </Typography>
+        <Typography variant="subtitle1" color="textPrimary">
+          Instructions
+        </Typography>
+        <Typography variant="body2" color="textSecondary" component="p">
+          {recipe.instructions}
+        </Typography>
+      </CardContent>
+    </Collapse>
   </Card>
   );
 })
