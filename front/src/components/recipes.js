@@ -1,10 +1,14 @@
 import React, { useEffect, useState }from 'react'
 import {Card, CardHeader, makeStyles, Avatar} from '@material-ui/core'
+import purple from "@material-ui/core/colors/purple";
 
 const useStyles = makeStyles({
   recipeCard: {
     margin: "10px",
     padding: "10px"
+  },
+  avatar: {
+    backgroundColor: purple[500]
   }
 })
 
@@ -34,7 +38,7 @@ const content = recipes.map(recipe => {
       title={recipe.name}
       avatar={
         <Avatar
-          aria-label="recipe"
+          aria-label="recipe" className={classes.avatar}
         >
           R
         </Avatar>
