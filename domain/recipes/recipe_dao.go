@@ -11,10 +11,10 @@ const (
 	indexUniqueRecipeName = "constraint_name"
 	errorNoRows           = "no rows in result set"
 
-	queryInsertRecipe = "INSERT INTO recipes(name, instructions, status) VALUES($1, $2, $3) RETURNING id;"
-	queryGetRecipe    = "SELECT id, name, instructions, status, date_created FROM recipes WHERE id = $1;"
-	queryListRecipes  = "SELECT id, name, instructions, status, date_created FROM recipes;"
-	queryUpdateRecipe = "UPDATE recipes SET name=$1, instructions=$2, status=$3 WHERE id = $4;"
+	queryInsertRecipe = "INSERT INTO recipes(name, instructions, description, status) VALUES($1, $2, $3, $4) RETURNING id;"
+	queryGetRecipe    = "SELECT id, name, instructions, description, status, date_created FROM recipes WHERE id = $1;"
+	queryListRecipes  = "SELECT id, name, instructions, description, status, date_created FROM recipes;"
+	queryUpdateRecipe = "UPDATE recipes SET name=$1, instructions=$2, description=$3, status=$4 WHERE id = $5;"
 	queryDeleteRecipe = "DELETE FROM recipes WHERE id=$1;"
 
 	queryInsertIngredient          = "INSERT INTO ingredients(serving_size, item) VALUES($1, $2) RETURNING id;"
@@ -91,7 +91,7 @@ func (recipe *Recipe) Save() *errors.RestErr {
 	defer stmt.Close()
 
 	var id int64
-	err = stmt.QueryRow(recipe.Name, recipe.Instructions, recipe.Status).Scan(&id)
+	err = stmt.QueryRow(recipe.Name, recipe.Instructions, recipe.Description, recipe.Status).Scan(&id)
 	if err != nil {
 		//TODO Refactor to use error code
 		if strings.Contains(err.Error(), indexUniqueRecipeName) {
@@ -231,7 +231,7 @@ func (recipe *Recipe) List() ([]Recipe, *errors.RestErr) {
 	defer rows.Close()
 
 	for rows.Next() {
-		err := rows.Scan(&recipe.Id, &recipe.Name, &recipe.Instructions, &recipe.Status, &recipe.DateCreated)
+		err := rows.Scan(&recipe.Id, &recipe.Name, &recipe.Instructions, &recipe.Description, &recipe.Status, &recipe.DateCreated)
 		if err != nil {
 			return nil, errors.NewInternalServerError(
 				fmt.Sprintf("there was a problem scanning rows for recipe list: %s", err.Error()))
@@ -263,7 +263,7 @@ func (recipe *Recipe) Update() *errors.RestErr {
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(recipe.Name, recipe.Instructions, recipe.Status, recipe.Id)
+	_, err = stmt.Exec(recipe.Name, recipe.Instructions, recipe.Description, recipe.Status, recipe.Id)
 	if err != nil {
 		return errors.NewInternalServerError(
 			fmt.Sprintf("failed to update recipe: %s", err.Error()))

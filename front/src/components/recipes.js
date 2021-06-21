@@ -6,6 +6,7 @@ import clsx from 'clsx';
 
 const useStyles = makeStyles((theme) => ({
   recipeCard: {
+    maxWidth: 350,
     margin: "10px",
     padding: "10px"
   },
@@ -65,6 +66,11 @@ const content = recipes.map((recipe, i) => {
         </Avatar>
       }
     />
+    <CardContent className={classes.content}>
+      <Typography variant="body1" color="textPrimary" >
+        {recipe.description}
+      </Typography>
+    </CardContent>
     <CardActions>
       <IconButton
         className={clsx(classes.expand, {
