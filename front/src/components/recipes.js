@@ -43,9 +43,11 @@ const content = recipes.map((recipe, i) => {
       }
     />
     <CardContent className={classes.content}>
-      <Typography variant="body1" color="textPrimary" >
-        {recipe.description}
-      </Typography>
+        <Typography variant="body1" color="textPrimary" align="left">
+          <div style={{overflow: "hidden", textOverflow: "ellipsis"}}>
+            {recipe.description}
+          </div>
+        </Typography>
     </CardContent>
     <CardActions>
       <IconButton
@@ -76,7 +78,7 @@ const content = recipes.map((recipe, i) => {
         <Typography variant="subtitle1" color="textPrimary">
           Instructions
         </Typography>
-        <Typography variant="body2" color="textSecondary" component="p">
+        <Typography variant="body2" color="textSecondary" component="p" className={classes.instructions}>
           {recipe.instructions}
         </Typography>
       </CardContent>
@@ -96,13 +98,13 @@ const useStyles = makeStyles((theme) => ({
   recipeCard: {
     maxWidth: 350,
     margin: "10px",
-    padding: "10px"
+    padding: "3px"
   },
   avatar: {
     backgroundColor: purple[500]
   },
   content: {
-    padding: "8px"
+    // padding: "8px"
   },
   expand: {
     transform: 'rotate(0deg)',
@@ -113,5 +115,9 @@ const useStyles = makeStyles((theme) => ({
   },
   expandOpen: {
     transform: 'rotate(180deg)'
+  },
+  instructions: {
+    textAlign: "left",
+    fontWeight: 600
   }
 }))

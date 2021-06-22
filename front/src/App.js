@@ -1,6 +1,8 @@
 import React from 'react';
 import { Container, Typography } from '@material-ui/core';
 import Recipes from './components/recipes'
+import RecipeForm from "./components/recipeForm";
+
 
 function App() {
 
@@ -8,13 +10,13 @@ function App() {
     <>
     <Container maxWidth="sm">
         <Typography
-            color="primary"
+            color="secondary"
             variant="h2"
             align="center"
-            gutterBottom
         >
             Favorite Recipes
         </Typography>
+        <RecipeForm />
         <Recipes />
     </Container>
     
