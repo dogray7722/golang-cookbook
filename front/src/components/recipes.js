@@ -4,30 +4,6 @@ import purple from "@material-ui/core/colors/purple";
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import clsx from 'clsx';
 
-const useStyles = makeStyles((theme) => ({
-  recipeCard: {
-    maxWidth: 350,
-    margin: "10px",
-    padding: "10px"
-  },
-  avatar: {
-    backgroundColor: purple[500]
-  },
-  content: {
-    padding: "8px"
-  },
-  expand: {
-    transform: 'rotate(0deg)',
-    marginLeft: 'auto',
-    transition: theme.transitions.create('transform', {
-      duration: theme.transitions.duration.shortest,
-    })
-  },
-  expandOpen: {
-    transform: 'rotate(180deg)'
-  }
-}))
-
 export default function Recipes() {
   const classes = useStyles()
   const [recipes, setRecipes] = useState([])
@@ -116,3 +92,26 @@ const content = recipes.map((recipe, i) => {
   )
 }
 
+const useStyles = makeStyles((theme) => ({
+  recipeCard: {
+    maxWidth: 350,
+    margin: "10px",
+    padding: "10px"
+  },
+  avatar: {
+    backgroundColor: purple[500]
+  },
+  content: {
+    padding: "8px"
+  },
+  expand: {
+    transform: 'rotate(0deg)',
+    marginLeft: 'auto',
+    transition: theme.transitions.create('transform', {
+      duration: theme.transitions.duration.shortest,
+    })
+  },
+  expandOpen: {
+    transform: 'rotate(180deg)'
+  }
+}))
