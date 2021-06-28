@@ -6,6 +6,7 @@ import {
     DialogContent,
     DialogContentText,
     DialogTitle,
+    Grid,
     TextareaAutosize,
     TextField
 } from '@material-ui/core'
@@ -24,7 +25,9 @@ export default function RecipeForm() {
 
     return(
         <>
-            <Button color='primary' variant='contained' size='large' onClick={handleClickOpen}>Create New Recipe</Button>
+            <Grid container s={4} justify="center">
+                <Button color='primary' variant='contained' size='large' onClick={handleClickOpen}>Create New Recipe</Button>
+            </Grid>
             <Dialog open={open} onClose={handleClose}>
                 <DialogTitle>Create Recipe</DialogTitle>
                 <DialogContent>
