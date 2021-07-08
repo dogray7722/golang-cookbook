@@ -1,11 +1,6 @@
 import React, { useState } from 'react'
 import {
     Button,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogContentText,
-    DialogTitle,
     Grid,
     TextareaAutosize,
     TextField
@@ -28,6 +23,11 @@ export default function RecipeForm() {
             <Grid container s={4} justify="center">
                 <Button color='primary' variant='contained' size='large' onClick={handleClickOpen}>Create New Recipe</Button>
             </Grid>
+            <form>
+               <TextareaAutosize rowsMin={5} placeholder="Enter your recipe here">
+
+               </TextareaAutosize>
+            </form>
         </>
     )
 }
