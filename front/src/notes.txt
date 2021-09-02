@@ -1,1 +1,20 @@
-Import High Fidelity Designes With Material-UI and React JS Course Notes
+Import High Fidelity Designs With Material-UI and React JS Course Notes
+
+1. Bootstrap and React Bootstrap:
+- oldest library
+- not originally for react
+- somewhat restrictive: not as easy to customize
+
+2. Semantic-UI / Semantic-UI-React
+- includes theme system
+- ported for react
+- no react-specific styling
+- dependent on main library
+
+3. Material UI
+- explicitly built for React
+- extreme Flexibility-- highly customizable
+- maintains consistency
+- active development (for now)
+- advanced feature support: works with SSR
+- integrated responsive design
