@@ -18,3 +18,26 @@ Import High Fidelity Designs With Material-UI and React JS Course Notes
 - active development (for now)
 - advanced feature support: works with SSR
 - integrated responsive design
+
+COURSE OVERVIEW
+SSR
+Responsive Design
+Analytics
+SEO-- hot topic, very important subject
+Building a production website
+Image optimization-- really important
+Lots of best practices
+Create React App
+Next.js: never used it, interested to learn more
+Going to migrate from CRA to Next.JS
+Google Cloud Functions: Set up your server
+Enables interesting behaviors
+Set up firebase
+Google Analytics: rare to see this overview
+Core things you need to know
+Animation integration: adds professional look and feel
+Workflow to streamline process
+Cross-Browser support: rare instructors open things up in other browsers
+Deployment: walk through some hosting solutions
+Going to create two create projects
+Web application in addition to recreating business website
