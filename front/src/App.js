@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Typography } from '@material-ui/core';
+import { Container, Typography, Button } from '@material-ui/core';
 import Recipes from './components/recipes'
 import RecipeForm from "./components/recipeForm";
 
@@ -16,8 +16,9 @@ function App() {
         >
             Favorite Recipes
         </Typography>
-        <RecipeForm />
-        <Recipes />
+        <Button variant="contained">Click Me!</Button>
+        {/*<RecipeForm />*/}
+        {/*<Recipes />*/}
     </Container>
     
     </>

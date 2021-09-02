@@ -41,3 +41,16 @@ Cross-Browser support: rare instructors open things up in other browsers
 Deployment: walk through some hosting solutions
 Going to create two create projects
 Web application in addition to recreating business website
+
+Need basic react JS Knowledge
+
+Next section is the obligatory environment setup
+- version of node
+- create react app
+- react router
+- material-UI
+- Add roboto font to index.html
+- Test creating a button
+
+
+
