@@ -52,5 +52,32 @@ Next section is the obligatory environment setup
 - Add roboto font to index.html
 - Test creating a button
 
+Helpful Documentation:
+https://reactjs.org/docs/getting-started.html
+https://material-ui.com/getting-started/installation/
+
+Download project files
+
+Project Overview
+High Fidelity Design file for AdobeXD included
+Menu file
+Animation integration
+Grid style
+Sections of the site
+Unsplash image
+Footer
+
+Project Overview Continued
+Complex layouts and structures
+Maintain consistency on different screen sizes
+Incorporate some more animations
+
+Contact page incorporates email handler
+Modals and dialogs
+Animation on the Estimate page
+
+Modals and forms will be good to help inform this recipe project
+
+
 
 
