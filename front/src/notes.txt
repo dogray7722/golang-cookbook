@@ -119,7 +119,9 @@ Styling System
 - Pass the theme prop in the theme provider component
 - To define the theme, create a theme.js file, and import { createMuiTheme } from "@material-ui/core/styles";
 - Can check the docs for the default theme, pull that in and make changes as needed
-
+- Check the palette section for updating the colors
+- Changing your primary will make materail ui auto-generate complimentary colors
+- Check the theme.js file now for examples on setting the colors.  Navigating the browser at this point should show the colors have changed
 
 
 
