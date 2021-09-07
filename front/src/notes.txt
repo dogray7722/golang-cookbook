@@ -105,6 +105,20 @@ Notes on the AppBar Component
 - AppBar will show up on top of anything else already on the page
 - Will fix this later
 AppBar Transitions
+- Using the elevation scroll technique
+- Elevates the app bar as soon as someone starts scrolling
+- most import use scroll trigger component to employ
+
+Styling System
+- Palette - manage the colors used in your app
+- Check Styles -> Basics
+- Has JSS: Javascript compiler
+- Must install material-ui styles to take advantage of this: npm install @material-ui/styles
+- Now you can use the theme provider
+- Must import and then wrap your component in the theme provider
+- Pass the theme prop in the theme provider component
+- To define the theme, create a theme.js file, and import { createMuiTheme } from "@material-ui/core/styles";
+- Can check the docs for the default theme, pull that in and make changes as needed
 
 
 
