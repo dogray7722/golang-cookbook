@@ -97,6 +97,8 @@ How to optimize images
 For jpeg / jpg Check out tinyjpeg.com
 Drop your file in before using in development
 
+For svgs, checkout svgomg.com
+
 
 
 
