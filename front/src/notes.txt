@@ -99,7 +99,7 @@ Drop your file in before using in development
 
 For svgs, checkout svgomg.com
 Drop your file
-Can control quality
+Can control quality directly through photoshop export as function
 
 
 
