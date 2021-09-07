@@ -98,6 +98,8 @@ For jpeg / jpg Check out tinyjpeg.com
 Drop your file in before using in development
 
 For svgs, checkout svgomg.com
+Drop your file
+Can control quality
 
 
 
