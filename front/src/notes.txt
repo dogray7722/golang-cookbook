@@ -90,8 +90,7 @@ Always use SVG when you can
 
 If you can't use SVG, then use JPG/PNG
 
-Good optimization vs. bad optimization
-Google Page Speed Insights for testing your pages
+Use Google Page Speed Insights for testing your pages
 
 How to optimize images
 For jpeg / jpg Check out tinyjpeg.com
@@ -100,6 +99,8 @@ Drop your file in before using in development
 For svgs, checkout svgomg.com
 Drop your file
 Can control quality directly through photoshop export as function
+
+Notes on the AppBar Component
 
 
 
