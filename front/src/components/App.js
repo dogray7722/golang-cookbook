@@ -1,7 +1,8 @@
 import React from 'react';
 import { Container, Typography } from '@material-ui/core';
-import Recipes from './components/recipes'
-import RecipeForm from "./components/recipeForm";
+import Recipes from './recipes'
+import RecipeForm from "./recipeForm";
+import Header from '../components/ui/header'
 
 
 function App() {
@@ -9,6 +10,7 @@ function App() {
   return (
     <>
     <Container maxWidth="sm">
+        <Header/>
         <Typography
             color="secondary"
             variant="h2"

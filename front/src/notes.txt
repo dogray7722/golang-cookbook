@@ -101,7 +101,9 @@ Drop your file
 Can control quality directly through photoshop export as function
 
 Notes on the AppBar Component
-
+By default the position is fixed
+AppBar will show up on top of anything else already on the page
+Will fix this later
 
 
 
