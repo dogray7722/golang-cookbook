@@ -78,6 +78,25 @@ Animation on the Estimate page
 
 Modals and forms will be good to help inform this recipe project
 
+Image Optimization
+Images in downloads are already optimized
+
+Always use SVG when you can
+- Responsive
+- Don't have to worry about pixelating out
+- scalable vector graphic
+- small files
+- customizable
+
+If you can't use SVG, then use JPG/PNG
+
+Good optimization vs. bad optimization
+Google Page Speed Insights for testing your pages
+
+How to optimize images
+For jpeg / jpg Check out tinyjpeg.com
+Drop your file in before using in development
+
 
 
 
