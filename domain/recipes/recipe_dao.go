@@ -2,8 +2,8 @@ package recipes
 
 import (
 	"fmt"
-	"github.com/dogray7722/golang-cookbook_dogray7722/datasources/postgres/recipes_db"
-	"github.com/dogray7722/golang-cookbook_dogray7722/utils/errors"
+	"golang-cookbook/datasources/postgres/recipes_db"
+	"golang-cookbook/utils/errors"
 	"strings"
 )
 

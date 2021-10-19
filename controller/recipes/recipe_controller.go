@@ -1,10 +1,10 @@
 package recipes
 
 import (
-	"github.com/dogray7722/golang-cookbook_dogray7722/domain/recipes"
-	"github.com/dogray7722/golang-cookbook_dogray7722/service"
-	"github.com/dogray7722/golang-cookbook_dogray7722/utils/errors"
 	"github.com/gin-gonic/gin"
+	"golang-cookbook/domain/recipes"
+	"golang-cookbook/service"
+	"golang-cookbook/utils/errors"
 	"net/http"
 	"strconv"
 )

@@ -9,20 +9,20 @@ import (
 )
 
 const (
-	postgres_host     = "postgres_host"
-	postgres_port     = "postgres_port"
-	postgres_user     = "postgres_user"
-	postgres_password = "postgres_password"
-	postgres_dbname   = "postgres_dbname"
+	postgresHost  = "postgres_host"
+	postgresPort      = "postgres_port"
+	postgresUser     = "postgres_user"
+	postgresPassword = "postgres_password"
+	postgresDbname   = "postgres_dbname"
 )
 
 var (
 	Client   *sql.DB
-	host     = os.Getenv(postgres_host)
-	port     = os.Getenv(postgres_port)
-	user     = os.Getenv(postgres_user)
-	password = os.Getenv(postgres_password)
-	dbname   = os.Getenv(postgres_dbname)
+	host     = os.Getenv(postgresHost)
+	port     = os.Getenv(postgresPort)
+	user     = os.Getenv(postgresUser)
+	password = os.Getenv(postgresPassword)
+	dbname   = os.Getenv(postgresDbname)
 )
 
 func init() {
