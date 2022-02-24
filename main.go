@@ -1,8 +1,6 @@
 package main
 
-import (
-	"golang-cookbook/app"
-)
+import "github.com/golang-cookbook/app"
 
 func main() {
 	app.StartApplication()

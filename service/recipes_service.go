@@ -1,8 +1,8 @@
 package service
 
 import (
-	"golang-cookbook/domain/recipes"
-	"golang-cookbook/utils/errors"
+	"github.com/golang-cookbook/domain/recipes"
+	"github.com/golang-cookbook/utils/errors"
 )
 
 func CreateRecipe(recipe recipes.Recipe) (*recipes.Recipe, *errors.RestErr) {

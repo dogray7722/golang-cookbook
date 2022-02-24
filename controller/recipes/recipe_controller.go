@@ -2,9 +2,9 @@ package recipes
 
 import (
 	"github.com/gin-gonic/gin"
-	"golang-cookbook/domain/recipes"
-	"golang-cookbook/service"
-	"golang-cookbook/utils/errors"
+	"github.com/golang-cookbook/service"
+	"github.com/golang-cookbook/domain/recipes"
+	"github.com/golang-cookbook/utils/errors"
 	"net/http"
 	"strconv"
 )

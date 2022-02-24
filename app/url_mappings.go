@@ -1,8 +1,8 @@
 package app
 
 import (
-	"golang-cookbook/controller/ping"
-	"golang-cookbook/controller/recipes"
+	"github.com/golang-cookbook/controller/ping"
+	"github.com/golang-cookbook/controller/recipes"
 )
 
 func mapUrls() {
