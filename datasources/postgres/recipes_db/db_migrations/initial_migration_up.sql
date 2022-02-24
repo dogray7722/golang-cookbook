@@ -1,7 +1,7 @@
 create table if not exists recipes (
    id   serial  primary key     not null,
    name         varchar(255)    not null,
-   description  text
+   description  text,
    instructions text            not null,
    status       varchar(128)    not null,
    date_created timestamptz     not null default now()
