@@ -1,6 +1,6 @@
 create table if not exists recipes (
    id   serial  primary key     not null,
-   name         varchar(255)    not null,
+   title         varchar(255)    not null,
    description  text,
    instructions text            not null,
    status       varchar(128)    not null,
@@ -9,7 +9,6 @@ create table if not exists recipes (
 
 create table if not exists ingredients (
     id  serial      primary key     not null,
-    serving_size    varchar(255)    not null,
     item            varchar(255)    not null,
     date_created    timestamptz     not null default now()
 );
