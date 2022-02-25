@@ -6,11 +6,7 @@ import (
 )
 
 func CreateRecipe(recipe recipes.Recipe) (*recipes.Recipe, *errors.RestErr) {
-	if err := recipe.Save(); err != nil {
-		return nil, err
-	}
-
-	if err := recipe.SaveIngredients(); err != nil {
+	if err := recipe.SaveRecipe(); err != nil {
 		return nil, err
 	}
 
@@ -22,7 +18,7 @@ func GetRecipe(recipeId int64) (*recipes.Recipe, *errors.RestErr) {
 		return nil, errors.NewBadRequestError("invalid recipe id")
 	}
 	result := &recipes.Recipe{Id: recipeId}
-	if err := result.Get(); err != nil {
+	if err := result.GetRecipe(); err != nil {
 		return nil, err
 	}
 	return result, nil
@@ -30,7 +26,7 @@ func GetRecipe(recipeId int64) (*recipes.Recipe, *errors.RestErr) {
 
 func ListRecipes() ([]recipes.Recipe, *errors.RestErr) {
 	dao := &recipes.Recipe{}
-	recipes, err := dao.List()
+	recipes, err := dao.ListRecipes()
 	if err != nil {
 		return nil, err
 	}
@@ -43,17 +39,13 @@ func UpdateRecipe(recipe recipes.Recipe) (*recipes.Recipe, *errors.RestErr) {
 		return nil, err
 	}
 
-	err = current.DeleteIngredients(recipe.Id)
-	if err != nil {
-		return nil, err
-	}
-
 	current.Title = recipe.Title
-	current.Instructions = recipe.Instructions
+	current.Description = recipe.Description
+	current.CookingTime = recipe.CookingTime
 	current.Ingredients = recipe.Ingredients
-	current.Status = recipe.Status
+	current.Instructions = recipe.Instructions
 
-	err = current.Update()
+	err = current.UpdateRecipe()
 	if err != nil {
 		return nil, err
 	}

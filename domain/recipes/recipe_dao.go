@@ -8,24 +8,18 @@ import (
 )
 
 const (
-	indexUniqueRecipeName = "constraint_name"
+	indexUniqueRecipeTitle = "constraint_title"
 	errorNoRows           = "no rows in result set"
 
-	queryInsertRecipe = "INSERT INTO recipes(name, instructions, description, status) VALUES($1, $2, $3, $4) RETURNING id;"
-	queryGetRecipe    = "SELECT id, name, instructions, description, status, date_created FROM recipes WHERE id = $1;"
-	queryListRecipes  = "SELECT id, name, instructions, description, status, date_created FROM recipes;"
-	queryUpdateRecipe = "UPDATE recipes SET name=$1, instructions=$2, description=$3, status=$4 WHERE id = $5;"
+	queryInsertRecipe = "INSERT INTO recipes(title, description, cooking_time, ingredients, instructions) VALUES($1, $2, $3, $4, $5) RETURNING id;"
+	queryGetRecipe    = "SELECT id, title, description, cooking_time, ingredients, instructions, date_created FROM recipes WHERE id = $1;"
+	queryListRecipes  = "SELECT id, title, description, cooking_time, ingredients, instructions, date_created FROM recipes;"
+	queryUpdateRecipe = "UPDATE recipes SET title=$1, description=$2, cooking_time=$3, ingredients=$4, instructions=$5 WHERE id = $6;"
 	queryDeleteRecipe = "DELETE FROM recipes WHERE id=$1;"
-
-	queryInsertIngredient          = "INSERT INTO ingredients(serving_size, item) VALUES($1, $2) RETURNING id;"
-	queryGetIngredientsByRecipe    = `SELECT id, serving_size, item FROM ingredients WHERE id IN (SELECT ingredient_id FROM recipes_to_ingredients WHERE recipe_id = $1);`
-	queryDeleteIngredientsByRecipe = `DELETE FROM ingredients WHERE id IN (SELECT ingredient_id FROM recipes_to_ingredients WHERE recipe_id = $1);`
-
-	queryInsertLookup = "INSERT INTO recipes_to_ingredients(recipe_id, ingredient_id) VALUES($1, $2);"
-	queryDeleteLookup = "DELETE FROM recipes_to_ingredients WHERE recipe_id = $1;"
 )
 
-func (recipe *Recipe) Get() *errors.RestErr {
+// GetRecipe returns an individual recipe by recipe id
+func (recipe *Recipe) GetRecipe() *errors.RestErr {
 	stmt, err := recipes_db.Client.Prepare(queryGetRecipe)
 	if err != nil {
 		return errors.NewInternalServerError(
@@ -34,7 +28,7 @@ func (recipe *Recipe) Get() *errors.RestErr {
 	defer stmt.Close()
 
 	result := stmt.QueryRow(recipe.Id)
-	if err := result.Scan(&recipe.Id, &recipe.Title, &recipe.Instructions, &recipe.Status, &recipe.DateCreated); err != nil {
+	if err := result.Scan(&recipe.Id, &recipe.Title, &recipe.Description, &recipe.CookingTime, &recipe.Ingredients, &recipe.Instructions, &recipe.DateCreated); err != nil {
 		if strings.Contains(err.Error(), errorNoRows) {
 			return errors.NewNotFoundError(fmt.Sprintf(
 				"recipe id %d not found", recipe.Id))
@@ -44,45 +38,11 @@ func (recipe *Recipe) Get() *errors.RestErr {
 			fmt.Sprintf("error when trying to get recipe %d: %s", recipe.Id, err.Error()))
 	}
 
-	recipeIngredients, err := getIngredients(recipe.Id)
-	if err != nil {
-		return errors.NewInternalServerError(
-			fmt.Sprintf("there was a problem retrieving recipe ingredients: %s", err.Error()))
-	}
-
-	recipe.Ingredients = recipeIngredients
-
 	return nil
-
 }
 
-func getIngredients(recipeID int64) ([]Ingredient, error) {
-	stmt, err := recipes_db.Client.Prepare(queryGetIngredientsByRecipe)
-	if err != nil {
-		return nil, err
-	}
-	defer stmt.Close()
-
-	rows, err := stmt.Query(recipeID)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	results := []Ingredient{}
-	for rows.Next() {
-		ing := Ingredient{}
-		err := rows.Scan(&ing.Id, &ing.Item)
-		if err != nil {
-			return nil, err
-		}
-		results = append(results, ing)
-	}
-
-	return results, nil
-}
-
-func (recipe *Recipe) Save() *errors.RestErr {
+// SaveRecipe adds a new recipe
+func (recipe *Recipe) SaveRecipe() *errors.RestErr {
 	stmt, err := recipes_db.Client.Prepare(queryInsertRecipe)
 	if err != nil {
 		return errors.NewInternalServerError(
@@ -91,10 +51,9 @@ func (recipe *Recipe) Save() *errors.RestErr {
 	defer stmt.Close()
 
 	var id int64
-	err = stmt.QueryRow(recipe.Title, recipe.Instructions, recipe.Description, recipe.Status).Scan(&id)
+	err = stmt.QueryRow(recipe.Title, &recipe.Description, &recipe.CookingTime, &recipe.Ingredients, &recipe.Instructions).Scan(&id)
 	if err != nil {
-		//TODO Refactor to use error code
-		if strings.Contains(err.Error(), indexUniqueRecipeName) {
+		if strings.Contains(err.Error(), indexUniqueRecipeTitle) {
 			return errors.NewBadRequestError(fmt.Sprintf(
 				"recipe name %s already exists", recipe.Title))
 		}
@@ -108,55 +67,8 @@ func (recipe *Recipe) Save() *errors.RestErr {
 	return nil
 }
 
-func (recipe *Recipe) SaveIngredients() *errors.RestErr {
-	stmt, err := recipes_db.Client.Prepare(queryInsertIngredient)
-	if err != nil {
-		return errors.NewInternalServerError(
-			fmt.Sprintf("failed to prepare ingredients query: %s", err.Error()))
-	}
-	defer stmt.Close()
-
-	for i := range recipe.Ingredients {
-		var id int64
-		err := stmt.QueryRow(recipe.Ingredients[i].Item).Scan(&id)
-		if err != nil {
-			return errors.NewInternalServerError(
-				fmt.Sprintf("failed to save ingredient: %s", err.Error()))
-		}
-
-		recipe.Ingredients[i].Id = id
-		if err := recipe.saveRecipeIngredient(recipe.Id, id); err != nil {
-			return errors.NewInternalServerError(
-				fmt.Sprintf("failed to save recipe ingredients: %s", err))
-		}
-	}
-
-	return nil
-}
-
-func (recipe *Recipe) saveRecipeIngredient(recipeId, ingredientId int64) *errors.RestErr {
-	stmt, err := recipes_db.Client.Prepare(queryInsertLookup)
-	if err != nil {
-		return errors.NewInternalServerError(
-			fmt.Sprintf("failed to prepare recipe to ingredients query: %s", err.Error()))
-	}
-	defer stmt.Close()
-
-	_, err = stmt.Exec(recipeId, ingredientId)
-	if err != nil {
-		return errors.NewInternalServerError(
-			fmt.Sprintf("failed to save recipes to ingredients: %s", err.Error()))
-	}
-
-	return nil
-}
-
+// DeleteRecipe removes a recipe 
 func (recipe *Recipe) DeleteRecipe(recipeId int64) *errors.RestErr {
-	if err := recipe.DeleteIngredients(recipeId); err != nil {
-		return errors.NewInternalServerError(
-			fmt.Sprintf("failed to delete recipe ingredients"))
-	}
-
 	stmt, err := recipes_db.Client.Prepare(queryDeleteRecipe)
 	if err != nil {
 		return errors.NewInternalServerError(
@@ -170,51 +82,10 @@ func (recipe *Recipe) DeleteRecipe(recipeId int64) *errors.RestErr {
 			fmt.Sprintf("failed to delete recipe: %s", err.Error()))
 	}
 	return nil
-
 }
 
-func (recipe *Recipe) DeleteIngredients(recipeID int64) *errors.RestErr {
-
-	stmt, err := recipes_db.Client.Prepare(queryDeleteIngredientsByRecipe)
-	if err != nil {
-		return errors.NewInternalServerError(
-			fmt.Sprintf("failed to prepare delete recipe ingredients query: %s", err.Error()))
-	}
-	defer stmt.Close()
-
-	_, err = stmt.Exec(recipeID)
-	if err != nil {
-		return errors.NewInternalServerError(
-			fmt.Sprintf("failed to delete ingredients by recipe: %s", err.Error()))
-	}
-
-	if err := recipe.deleteRecipeIngredient(recipeID); err != nil {
-		return errors.NewInternalServerError(
-			fmt.Sprintf("failed to delete recipe ingredient relationships: %s", err))
-	}
-
-	return nil
-
-}
-
-func (recipe *Recipe) deleteRecipeIngredient(recipeId int64) *errors.RestErr {
-	stmt, err := recipes_db.Client.Prepare(queryDeleteLookup)
-	if err != nil {
-		return errors.NewInternalServerError(
-			fmt.Sprintf("failed to prepare recipe to ingredient delete statement: %s", err.Error()))
-	}
-	defer stmt.Close()
-
-	_, err = stmt.Exec(recipeId)
-	if err != nil {
-		return errors.NewInternalServerError(
-			fmt.Sprintf("failed to delete recipe to ingredients relationship: %s", err.Error()))
-	}
-
-	return nil
-}
-
-func (recipe *Recipe) List() ([]Recipe, *errors.RestErr) {
+// ListRecipes returns a set of recipes
+func (recipe *Recipe) ListRecipes() ([]Recipe, *errors.RestErr) {
 	stmt, err := recipes_db.Client.Prepare(queryListRecipes)
 	if err != nil {
 		return nil, errors.NewInternalServerError(
@@ -231,20 +102,11 @@ func (recipe *Recipe) List() ([]Recipe, *errors.RestErr) {
 	defer rows.Close()
 
 	for rows.Next() {
-		err := rows.Scan(&recipe.Id, &recipe.Title, &recipe.Instructions, &recipe.Description, &recipe.Status, &recipe.DateCreated)
+		err := rows.Scan(&recipe.Id, &recipe.Title, &recipe.Description, &recipe.CookingTime, &recipe.Ingredients, &recipe.Instructions, &recipe.DateCreated)
 		if err != nil {
 			return nil, errors.NewInternalServerError(
 				fmt.Sprintf("there was a problem scanning rows for recipe list: %s", err.Error()))
 		}
-
-		recipeIngredients, err := getIngredients(recipe.Id)
-		if err != nil {
-			return nil, errors.NewInternalServerError(
-				fmt.Sprintf("there was a problem retrieving recipe ingredients: %s", err.Error()))
-		}
-
-		recipe.Ingredients = recipeIngredients
-
 		recipes = append(recipes, *recipe)
 
 		if len(recipes) == 0 {
@@ -255,7 +117,8 @@ func (recipe *Recipe) List() ([]Recipe, *errors.RestErr) {
 	return recipes, nil
 }
 
-func (recipe *Recipe) Update() *errors.RestErr {
+// UpdateRecipe updates an individual recipe
+func (recipe *Recipe) UpdateRecipe() *errors.RestErr {
 	stmt, err := recipes_db.Client.Prepare(queryUpdateRecipe)
 	if err != nil {
 		return errors.NewInternalServerError(
@@ -263,15 +126,10 @@ func (recipe *Recipe) Update() *errors.RestErr {
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(recipe.Title, recipe.Instructions, recipe.Description, recipe.Status, recipe.Id)
+	_, err = stmt.Exec(recipe.Title, recipe.Description, recipe.CookingTime, recipe.Ingredients, recipe.Instructions, recipe.Id)
 	if err != nil {
 		return errors.NewInternalServerError(
 			fmt.Sprintf("failed to update recipe: %s", err.Error()))
-	}
-
-	if err := recipe.SaveIngredients(); err != nil {
-		return errors.NewInternalServerError(
-			fmt.Sprintf("failed to save ingredients: %s", err))
 	}
 
 	return nil
