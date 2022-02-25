@@ -48,7 +48,7 @@ func UpdateRecipe(recipe recipes.Recipe) (*recipes.Recipe, *errors.RestErr) {
 		return nil, err
 	}
 
-	current.Name = recipe.Name
+	current.Title = recipe.Title
 	current.Instructions = recipe.Instructions
 	current.Ingredients = recipe.Ingredients
 	current.Status = recipe.Status

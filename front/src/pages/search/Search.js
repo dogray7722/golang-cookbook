@@ -6,7 +6,7 @@ export default function Search() {
   const queryString = useLocation().search;
   const queryParams = new URLSearchParams(queryString);
   const query = queryParams.get("q");
-  const url = "http://localhost:3000/recipes?q=" + query;
+  const url = "http://localhost:8080/recipes?q=" + query;
   const { data, isPending, error } = useFetch(url);
 
   return (

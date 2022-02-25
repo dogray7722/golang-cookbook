@@ -13,7 +13,7 @@ export default function Create() {
   const [newIngredient, setNewIngredient] = useState("");
   const [ingredients, setIngredients] = useState([]);
   const ingredientInput = useRef(null);
-  const { postData, data } = useFetch("http://localhost:3000/recipes", "POST");
+  const { postData, data } = useFetch("http://localhost:8080/recipes", "POST");
   const navigate = useNavigate();
 
   const handleAdd = (e) => {
