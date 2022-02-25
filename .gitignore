@@ -4,5 +4,5 @@ out
 tmp
 cmd/functions/audit/vendor
 vendor
-
+.vscode
 
