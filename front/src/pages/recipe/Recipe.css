@@ -23,7 +23,11 @@
 .recipe li:last-child::after {
   content: ".";
 }
-.method {
+.description {
+  text-align: left;
+  font-size: medium;
+}
+.instructions {
   text-align: left;
   line-height: 1.5em;
 }

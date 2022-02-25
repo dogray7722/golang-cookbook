@@ -8,7 +8,8 @@ import "./Create.css";
 
 export default function Create() {
   const [title, setTitle] = useState("");
-  const [method, setMethod] = useState("");
+  const [description, setDescription] = useState("");
+  const [instructions, setInstructions] = useState("");
   const [cookingTime, setCookingTime] = useState("");
   const [newIngredient, setNewIngredient] = useState("");
   const [ingredients, setIngredients] = useState([]);
@@ -31,7 +32,7 @@ export default function Create() {
     postData({
       title,
       ingredients,
-      method,
+      instructions,
       cookingTime: cookingTime + " minutes",
     });
   };
@@ -53,6 +54,14 @@ export default function Create() {
             onChange={(e) => setTitle(e.target.value)}
             value={title}
             required
+          />
+        </label>
+        <label>
+          <span>Recipe Description:</span>
+          <textarea
+            type="text"
+            onChange={(e) => setDescription(e.target.value)}
+            value={description}
           />
         </label>
         <label>
@@ -78,8 +87,8 @@ export default function Create() {
         <label>
           <span>Recipe Instructions:</span>
           <textarea
-            onChange={(e) => setMethod(e.target.value)}
-            value={method}
+            onChange={(e) => setInstructions(e.target.value)}
+            value={instructions}
             required
           />
         </label>

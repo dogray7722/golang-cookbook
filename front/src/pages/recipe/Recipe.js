@@ -21,7 +21,8 @@ export default function Recipe() {
               <li key={ing}>{ing}</li>
             ))}
           </ul>
-          <p className="method">{recipe.method}</p>
+          <p className="description">{recipe.description}</p>
+          <p className="instructions">{recipe.instructions}</p>
         </>
       )}
     </div>
