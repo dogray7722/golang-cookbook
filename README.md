@@ -1,7 +1,7 @@
 # golang-cookbook
 
 ## Purpose
-This application demonstrates full stack chops including a REST-Full Web API using GO, React Hooks, and Material UI for styling.  It incorporates the gin/gonic web server package, and uses the pq postgres driver for the database/sql instance.
+This application demonstrates full stack chops including a REST-Full Web API using GO, React Hooks, and React Router.  It incorporates the gin/gonic web server package, and uses the pq postgres driver for the database/sql instance.
 
 ## Setup
 - Configure the following local environment variables to set up your database connection:
