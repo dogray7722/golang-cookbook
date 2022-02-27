@@ -1,12 +1,13 @@
 package recipes
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/golang-cookbook/service"
-	"github.com/golang-cookbook/domain/recipes"
-	"github.com/golang-cookbook/utils/errors"
 	"net/http"
 	"strconv"
+
+	"github.com/gin-gonic/gin"
+	"github.com/golang-cookbook/domain/recipes"
+	"github.com/golang-cookbook/service"
+	"github.com/golang-cookbook/utils/errors"
 )
 
 func Create(c *gin.Context) {
@@ -18,6 +19,7 @@ func Create(c *gin.Context) {
 	}
 
 	result, saveErr := service.CreateRecipe(recipe)
+
 	if saveErr != nil {
 		c.JSON(saveErr.Status, saveErr)
 		return
@@ -26,7 +28,6 @@ func Create(c *gin.Context) {
 }
 
 func List(c *gin.Context) {
-	c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
 	recipes, listErr := service.ListRecipes()
 	if listErr != nil {
 		c.JSON(listErr.Status, listErr)

@@ -2,9 +2,11 @@ package recipes
 
 import (
 	"fmt"
+	"strings"
+
 	"github.com/golang-cookbook/datasources/postgres/recipes_db"
 	"github.com/golang-cookbook/utils/errors"
-	"strings"
+	"github.com/lib/pq"
 )
 
 const (
@@ -20,6 +22,8 @@ const (
 
 // GetRecipe returns an individual recipe by recipe id
 func (recipe *Recipe) GetRecipe() *errors.RestErr {
+	ingredients := strings.Join(recipe.Ingredients, ", ")
+
 	stmt, err := recipes_db.Client.Prepare(queryGetRecipe)
 	if err != nil {
 		return errors.NewInternalServerError(
@@ -28,7 +32,7 @@ func (recipe *Recipe) GetRecipe() *errors.RestErr {
 	defer stmt.Close()
 
 	result := stmt.QueryRow(recipe.Id)
-	if err := result.Scan(&recipe.Id, &recipe.Title, &recipe.Description, &recipe.CookingTime, &recipe.Ingredients, &recipe.Instructions, &recipe.DateCreated); err != nil {
+	if err := result.Scan(&recipe.Id, &recipe.Title, &recipe.Description, &recipe.CookingTime, &ingredients, &recipe.Instructions, &recipe.DateCreated); err != nil {
 		if strings.Contains(err.Error(), errorNoRows) {
 			return errors.NewNotFoundError(fmt.Sprintf(
 				"recipe id %d not found", recipe.Id))
@@ -48,10 +52,12 @@ func (recipe *Recipe) SaveRecipe() *errors.RestErr {
 		return errors.NewInternalServerError(
 			fmt.Sprintf("failed to save new recipe: %s", err.Error()))
 	}
+
+
 	defer stmt.Close()
 
 	var id int64
-	err = stmt.QueryRow(recipe.Title, &recipe.Description, &recipe.CookingTime, &recipe.Ingredients, &recipe.Instructions).Scan(&id)
+	err = stmt.QueryRow(recipe.Title, &recipe.Description, &recipe.CookingTime, pq.StringArray(recipe.Ingredients), &recipe.Instructions).Scan(&id)
 	if err != nil {
 		if strings.Contains(err.Error(), indexUniqueRecipeTitle) {
 			return errors.NewBadRequestError(fmt.Sprintf(
@@ -102,7 +108,7 @@ func (recipe *Recipe) ListRecipes() ([]Recipe, *errors.RestErr) {
 	defer rows.Close()
 
 	for rows.Next() {
-		err := rows.Scan(&recipe.Id, &recipe.Title, &recipe.Description, &recipe.CookingTime, &recipe.Ingredients, &recipe.Instructions, &recipe.DateCreated)
+		err := rows.Scan(&recipe.Id, &recipe.Title, &recipe.Description, &recipe.CookingTime, &recipe.Ingredients, (*pq.StringArray(&recipe.Ingredients)), &recipe.DateCreated)
 		if err != nil {
 			return nil, errors.NewInternalServerError(
 				fmt.Sprintf("there was a problem scanning rows for recipe list: %s", err.Error()))

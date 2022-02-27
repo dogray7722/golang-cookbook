@@ -6,8 +6,9 @@ import "./Recipe.css";
 
 export default function Recipe() {
   const { id } = useParams();
-  const url = "http://localhost:3000/recipes/" + id;
+  const url = "http://localhost:8080/recipes/" + id;
   const { data: recipe, error, isPending } = useFetch(url);
+  console.log(recipe);
   return (
     <div className="recipe">
       {error && <p className="error">{error}</p>}
@@ -17,6 +18,7 @@ export default function Recipe() {
           <h2 className="page-title">{recipe.title}</h2>
           <p>Takes {recipe.cookingTime} to make.</p>
           <ul>
+            {recipe.ingredients.split(",")}
             {recipe.ingredients.map((ing) => (
               <li key={ing}>{ing}</li>
             ))}

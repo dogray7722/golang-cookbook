@@ -31,9 +31,10 @@ export default function Create() {
     e.preventDefault();
     postData({
       title,
+      description,
       ingredients,
       instructions,
-      cookingTime: cookingTime + " minutes",
+      cooking_time: cookingTime + " minutes",
     });
   };
 
@@ -41,7 +42,7 @@ export default function Create() {
     if (data) {
       navigate("/");
     }
-  }, [data]);
+  }, [navigate, data]);
 
   return (
     <div className="create">

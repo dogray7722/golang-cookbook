@@ -25,7 +25,8 @@
 }
 .description {
   text-align: left;
-  font-size: medium;
+  font-size: 1.6em;
+  line-height: 1.5em;
 }
 .instructions {
   text-align: left;
