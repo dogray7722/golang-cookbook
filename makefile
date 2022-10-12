@@ -7,4 +7,9 @@ createdb:
 dropdb:
 	docker exec -it postgres12 dropdb recipes_db
 
-	.PHONY postgres createdb dropdb
+migrateup:
+	migrate -path datasources/postgres/recipes_db/db_migrations -database "postgresql://root:mysecretpassword@localhost:5432/recipes_db?sslmode=disable" -verbose up
+
+migratedown:
+	migrate -path datasources/postgres/recipes_db/db_migrations -database "postgresql://root:mysecretpassword@localhost:5432/recipes_db?sslmode=disable" -verbose down
+	.PHONY postgres createdb dropdb migrateup
