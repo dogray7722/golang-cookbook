@@ -1,12 +1,10 @@
 package app
 
 import (
-	"github.com/golang-cookbook/controller/ping"
 	"github.com/golang-cookbook/controller/recipes"
 )
 
 func mapUrls() {
-	router.GET("/ping", ping.Ping)
 
 	router.POST("/recipes", recipes.Create)
 	router.GET("/recipes/:recipe_id", recipes.Get)
