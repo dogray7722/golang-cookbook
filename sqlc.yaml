@@ -2,7 +2,7 @@ version: "1"
 packages:
   - name: "recipes_db"
     path: "./datasources/postgres/recipes_db/sqlc"
-    queries: "./datasources/postgres/recipes_db/queries"
+    queries: "./datasources/postgres/recipes_db/query"
     schema: "./datasources/postgres/recipes_db/db_migrations"
     engine: "postgresql"
     emit_prepared_queries: false

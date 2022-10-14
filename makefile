@@ -12,4 +12,8 @@ migrateup:
 
 migratedown:
 	migrate -path datasources/postgres/recipes_db/db_migrations -database "postgresql://root:mysecretpassword@localhost:5432/recipes_db?sslmode=disable" -verbose down
-	.PHONY postgres createdb dropdb migrateup
+	
+sqlc:
+	sqlc generate
+	
+	.PHONY postgres createdb dropdb migrateup sqlc
