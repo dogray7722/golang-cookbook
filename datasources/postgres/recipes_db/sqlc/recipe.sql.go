@@ -57,6 +57,36 @@ func (q *Queries) CreateRecipe(ctx context.Context, arg CreateRecipeParams) (Rec
 	return i, err
 }
 
+const deleteRecipe = `-- name: DeleteRecipe :exec
+DELETE FROM recipes
+WHERE id = $1
+`
+
+func (q *Queries) DeleteRecipe(ctx context.Context, id int32) error {
+	_, err := q.db.ExecContext(ctx, deleteRecipe, id)
+	return err
+}
+
+const getRecipe = `-- name: GetRecipe :one
+  SELECT id, title, description, cooking_time, ingredients, instructions, date_created FROM recipes
+  WHERE id = $1 LIMIT 1
+`
+
+func (q *Queries) GetRecipe(ctx context.Context, id int32) (Recipe, error) {
+	row := q.db.QueryRowContext(ctx, getRecipe, id)
+	var i Recipe
+	err := row.Scan(
+		&i.ID,
+		&i.Title,
+		&i.Description,
+		&i.CookingTime,
+		pq.Array(&i.Ingredients),
+		&i.Instructions,
+		&i.DateCreated,
+	)
+	return i, err
+}
+
 const listRecipes = `-- name: ListRecipes :many
 SELECT id, title, description, cooking_time, ingredients, instructions, date_created FROM recipes
 ORDER BY title
@@ -91,4 +121,46 @@ func (q *Queries) ListRecipes(ctx context.Context) ([]Recipe, error) {
 		return nil, err
 	}
 	return items, nil
+}
+
+const updateRecipe = `-- name: UpdateRecipe :one
+UPDATE recipes
+  set title = $2,
+  description = $3,
+  cooking_time = $4,
+  ingredients = $5,
+  date_created = $6
+WHERE id = $1
+RETURNING id, title, description, cooking_time, ingredients, instructions, date_created
+`
+
+type UpdateRecipeParams struct {
+	ID          int32          `json:"id"`
+	Title       string         `json:"title"`
+	Description sql.NullString `json:"description"`
+	CookingTime string         `json:"cookingTime"`
+	Ingredients []string       `json:"ingredients"`
+	DateCreated time.Time      `json:"dateCreated"`
+}
+
+func (q *Queries) UpdateRecipe(ctx context.Context, arg UpdateRecipeParams) (Recipe, error) {
+	row := q.db.QueryRowContext(ctx, updateRecipe,
+		arg.ID,
+		arg.Title,
+		arg.Description,
+		arg.CookingTime,
+		pq.Array(arg.Ingredients),
+		arg.DateCreated,
+	)
+	var i Recipe
+	err := row.Scan(
+		&i.ID,
+		&i.Title,
+		&i.Description,
+		&i.CookingTime,
+		pq.Array(&i.Ingredients),
+		&i.Instructions,
+		&i.DateCreated,
+	)
+	return i, err
 }
