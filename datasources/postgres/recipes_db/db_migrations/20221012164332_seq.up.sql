@@ -1,9 +1,9 @@
-create table if not exists recipes (
-   id   serial  primary key     not null,
-   title        varchar(255)    not null,
-   description  text,
-   cooking_time text            not null,
-   ingredients  text[]          not null default '{}'::text[],
-   instructions text            not null,
-   date_created timestamptz     not null default now()
+CREATE TABLE IF NOT EXISTS "recipes" (
+   "id"   serial  primary key     NOT NULL,
+   "title"        varchar(255)    NOT NULL,
+   "description"  text,
+   "cooking_time" text            NOT NULL,
+   "ingredients"  text[]          NOT NULL DEFAULT '{}'::text[],
+   "instructions" text            NOT NULL,
+   "date_created" timestamptz     NOT NULL DEFAULT (now())
 );

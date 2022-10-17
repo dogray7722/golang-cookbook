@@ -5,7 +5,6 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/golang-cookbook/domain/recipes"
 	"github.com/golang-cookbook/service"
 	"github.com/golang-cookbook/utils/errors"
 )

@@ -56,3 +56,39 @@ func (q *Queries) CreateRecipe(ctx context.Context, arg CreateRecipeParams) (Rec
 	)
 	return i, err
 }
+
+const listRecipes = `-- name: ListRecipes :many
+SELECT id, title, description, cooking_time, ingredients, instructions, date_created FROM recipes
+ORDER BY title
+`
+
+func (q *Queries) ListRecipes(ctx context.Context) ([]Recipe, error) {
+	rows, err := q.db.QueryContext(ctx, listRecipes)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Recipe
+	for rows.Next() {
+		var i Recipe
+		if err := rows.Scan(
+			&i.ID,
+			&i.Title,
+			&i.Description,
+			&i.CookingTime,
+			pq.Array(&i.Ingredients),
+			&i.Instructions,
+			&i.DateCreated,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}

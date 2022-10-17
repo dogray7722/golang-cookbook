@@ -9,3 +9,9 @@ INSERT INTO recipes (
 ) VALUES (
   $1, $2, $3, $4, $5, $6
 ) RETURNING *;
+
+-- name: ListRecipes :many
+SELECT * FROM recipes
+ORDER BY title;
+
+-- name Delete
