@@ -63,8 +63,8 @@ func TestGetRecipe(t *testing.T) {
 
 func TestUpdateRecipe(t *testing.T) {
 	recipe1 := createTestRecipe(t)
-
 	originalRecipe, _ := testQueries.GetRecipe(context.Background(), recipe1.ID)
+	
 	arg := UpdateRecipeParams{
 		ID: originalRecipe.ID,
 		Title: util.RandomTitle(),
@@ -73,7 +73,6 @@ func TestUpdateRecipe(t *testing.T) {
 		Ingredients: originalRecipe.Ingredients,
 		Instructions: originalRecipe.Instructions,
 	}
-
 
 	recipe2, err := testQueries.UpdateRecipe(context.Background(), arg)
 	require.NoError(t, err)
@@ -84,10 +83,20 @@ func TestUpdateRecipe(t *testing.T) {
 	require.Equal(t, recipe1.Instructions, recipe2.Instructions)
 	require.Equal(t, recipe1.Ingredients, recipe2.Ingredients)
 	require.WithinDuration(t, recipe1.DateCreated, recipe2.DateCreated, time.Second)
-
 }
 
+func TestDeleteRecipe(t *testing.T) {
+	recipe1 := createTestRecipe(t)
 
+	err := testQueries.DeleteRecipe(context.Background(), recipe1.ID)
+	require.NoError(t, err)
+	
+	res, err := testQueries.GetRecipe(context.Background(), recipe1.ID)
+	require.Empty(t, res)
+	require.Error(t, err)
+	require.EqualError(t, err, sql.ErrNoRows.Error())
+
+}
 
 // func TestListRecipes(t *testing.T) {
 // 	recipe1 := createTestRecipe(t)
