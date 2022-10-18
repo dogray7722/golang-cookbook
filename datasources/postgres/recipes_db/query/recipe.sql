@@ -16,7 +16,9 @@ INSERT INTO recipes (
 
 -- name: ListRecipes :many
 SELECT * FROM recipes
-ORDER BY title;
+ORDER BY id
+LIMIT $1
+OFFSET $2;
 
 -- name: DeleteRecipe :exec
 DELETE FROM recipes
@@ -28,6 +30,6 @@ UPDATE recipes
   description = $3,
   cooking_time = $4,
   ingredients = $5,
-  date_created = $6
+  instructions = $6
 WHERE id = $1
 RETURNING *;

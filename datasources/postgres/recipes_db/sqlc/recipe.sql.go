@@ -89,16 +89,23 @@ func (q *Queries) GetRecipe(ctx context.Context, id int32) (Recipe, error) {
 
 const listRecipes = `-- name: ListRecipes :many
 SELECT id, title, description, cooking_time, ingredients, instructions, date_created FROM recipes
-ORDER BY title
+ORDER BY id
+LIMIT $1
+OFFSET $2
 `
 
-func (q *Queries) ListRecipes(ctx context.Context) ([]Recipe, error) {
-	rows, err := q.db.QueryContext(ctx, listRecipes)
+type ListRecipesParams struct {
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
+}
+
+func (q *Queries) ListRecipes(ctx context.Context, arg ListRecipesParams) ([]Recipe, error) {
+	rows, err := q.db.QueryContext(ctx, listRecipes, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Recipe
+	items := []Recipe{}
 	for rows.Next() {
 		var i Recipe
 		if err := rows.Scan(
@@ -129,18 +136,18 @@ UPDATE recipes
   description = $3,
   cooking_time = $4,
   ingredients = $5,
-  date_created = $6
+  instructions = $6
 WHERE id = $1
 RETURNING id, title, description, cooking_time, ingredients, instructions, date_created
 `
 
 type UpdateRecipeParams struct {
-	ID          int32          `json:"id"`
-	Title       string         `json:"title"`
-	Description sql.NullString `json:"description"`
-	CookingTime string         `json:"cookingTime"`
-	Ingredients []string       `json:"ingredients"`
-	DateCreated time.Time      `json:"dateCreated"`
+	ID           int32          `json:"id"`
+	Title        string         `json:"title"`
+	Description  sql.NullString `json:"description"`
+	CookingTime  string         `json:"cookingTime"`
+	Ingredients  []string       `json:"ingredients"`
+	Instructions string         `json:"instructions"`
 }
 
 func (q *Queries) UpdateRecipe(ctx context.Context, arg UpdateRecipeParams) (Recipe, error) {
@@ -150,7 +157,7 @@ func (q *Queries) UpdateRecipe(ctx context.Context, arg UpdateRecipeParams) (Rec
 		arg.Description,
 		arg.CookingTime,
 		pq.Array(arg.Ingredients),
-		arg.DateCreated,
+		arg.Instructions,
 	)
 	var i Recipe
 	err := row.Scan(
