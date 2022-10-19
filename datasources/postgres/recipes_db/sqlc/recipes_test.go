@@ -98,13 +98,18 @@ func TestDeleteRecipe(t *testing.T) {
 
 }
 
-// func TestListRecipes(t *testing.T) {
-// 	recipe1 := createTestRecipe(t)
-// 	recipe2 := createTestRecipe(t)
+func TestListRecipes(t *testing.T) {
+	createTestRecipe(t)
+	createTestRecipe(t)
+
+	params := ListRecipesParams{
+		Limit: 2,
+		Offset: 0,
+	}
 	
-// 	res, err := testQueries.ListRecipes(context.Background())
-// 	require.NoError(t, err)
-// 	require.NotEmpty(t, res)
-// 	require.NotEqual(t, res[0].ID, res[len(res)-1].ID)
+	res, err := testQueries.ListRecipes(context.Background(), params)
+	require.NoError(t, err)
+	require.NotEmpty(t, res)
+	require.NotEqual(t, res[0].ID, res[len(res)-1].ID)
 	
-// }
+}
