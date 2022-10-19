@@ -95,7 +95,6 @@ func TestDeleteRecipe(t *testing.T) {
 	require.Empty(t, res)
 	require.Error(t, err)
 	require.EqualError(t, err, sql.ErrNoRows.Error())
-
 }
 
 func TestListRecipes(t *testing.T) {
@@ -117,5 +116,4 @@ func TestListRecipes(t *testing.T) {
 	}
 	
 	require.NotEqual(t, res[0].ID, res[len(res)-1].ID)
-
 }
