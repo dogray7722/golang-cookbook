@@ -7,12 +7,8 @@ import (
 	"github.com/golang-cookbook/utils/errors"
 )
 
-func CreateRecipe(recipe db.CreateRecipeParams) (*db.Recipe, *errors.RestErr) {
-	// need instance of queries in which to run createRecipe
-	// needs to be global
-	
-	
-	res, err := queries.CreateRecipe(context.Background(), recipe)
+func CreateRecipe(recipe db.CreateRecipeParams) (*db.Recipe, *errors.RestErr) {	
+	res, err := CreateRecipe(context.Background(), recipe)
 	if err != nil {
 		return nil, &errors.RestErr{Error: err.Error()}
 	}
