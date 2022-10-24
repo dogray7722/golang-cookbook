@@ -1,23 +1,41 @@
-package recipes
+package app
 
 import (
+	"database/sql"
 	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/golang-cookbook/service"
 	"github.com/golang-cookbook/utils/errors"
+
+	db "github.com/golang-cookbook/datasources/postgres/recipes_db/sqlc"
 )
 
-func Create(c *gin.Context) {
-	var recipe recipes.Recipe
-	if err := c.ShouldBindJSON(&recipe); err != nil {
+type createRecipeRequest struct {
+	Title        string         `json:"title" binding:"required"`
+	Description  sql.NullString `json:"description"`
+	CookingTime  string         `json:"cookingTime" binding:"required"`
+	Ingredients  []string       `json:"ingredients" binding:"required"`
+	Instructions string         `json:"instructions" binding:"required"`
+}
+
+func (s *Server) createRecipe(ctx *gin.Context) {
+	var req createRecipeRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
 		restErr := errors.NewBadRequestError("invalid json body")
-		c.JSON(restErr.Status, restErr)
+		ctx.JSON(restErr.Status, restErr)
 		return
 	}
 
-	result, saveErr := service.CreateRecipe(recipe)
+	arg := db.CreateRecipeParams{
+		Title: req.Title,
+		Description: req.Description,
+		CookingTime: req.CookingTime,
+		Ingredients: req.Ingredients,
+		Instructions: req.Instructions,
+	}
+
+	result, saveErr := s.store.createRecipe
 
 	if saveErr != nil {
 		c.JSON(saveErr.Status, saveErr)
