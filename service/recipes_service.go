@@ -8,7 +8,7 @@ import (
 )
 
 func CreateRecipe(recipe db.CreateRecipeParams) (*db.Recipe, *errors.RestErr) {	
-	res, err := CreateRecipe(context.Background(), recipe)
+	res, err := 
 	if err != nil {
 		return nil, &errors.RestErr{Error: err.Error()}
 	}
