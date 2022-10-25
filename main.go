@@ -20,6 +20,6 @@ func main() {
 	}
 
 	store := db.NewStore(conn)
-	srv := app.NewServer(&store)
+	
 
 }
