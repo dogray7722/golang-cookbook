@@ -1,12 +1,11 @@
 package app
 
 import (
-
 	"database/sql"
+	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/golang-cookbook/utils/errors"
-	"net/http"
 
 	db "github.com/golang-cookbook/datasources/postgres/recipes_db/sqlc"
 )
@@ -19,11 +18,19 @@ type createRecipeRequest struct {
 	Instructions string         `json:"instructions" binding:"required"`
 }
 
+type updateRecipeRequest struct {
+	ID string `json:"id" binding:"required"`
+	Title string `json:"title" binding:"required"`
+	Description  sql.NullString `json:"description"`
+	CookingTime  string         `json:"cookingTime" binding:"required"`
+	Ingredients  []string       `json:"ingredients" binding:"required"`
+	Instructions string         `json:"instructions" binding:"required"`
+}
+
 func (server *Server) createRecipe(ctx *gin.Context) {
 	var req createRecipeRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		restErr := errors.NewBadRequestError("invalid json body")
-		ctx.JSON(restErr.Status, restErr)
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
 
@@ -36,77 +43,85 @@ func (server *Server) createRecipe(ctx *gin.Context) {
 	}
 
 	result, err := server.store.CreateRecipe(ctx, arg)
-
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, err)
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
 	ctx.JSON(http.StatusCreated, result)
 }
 
-// func List(c *gin.Context) {
-// 	recipes, listErr := service.ListRecipes()
-// 	if listErr != nil {
-// 		c.JSON(listErr.Status, listErr)
-// 		return
-// 	}
+func (server *Server) getRecipe(ctx *gin.Context) {
+	recipeId, err := strconv.Atoi(ctx.Param("recipe_id"))
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+	
+	recipe, err := server.store.GetRecipe(ctx, int32(recipeId))
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+	ctx.JSON(http.StatusOK, recipe)
+}
 
-// 	c.JSON(http.StatusOK, recipes)
-// }
+func (server *Server) listRecipes(ctx *gin.Context) {
+	var params db.ListRecipesParams
+	if err := ctx.ShouldBindJSON(&params); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+	
+	recipes, err := server.store.ListRecipes(ctx, params) 
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+			return
+		}
+	
+	ctx.JSON(http.StatusOK, recipes)
+}
 
-// func Get(c *gin.Context) {
-// 	recipeId, recipeErr := strconv.ParseInt(c.Param("recipe_id"), 10, 64)
-// 	if recipeErr != nil {
-// 		err := errors.NewBadRequestError("invalid recipe id")
-// 		c.JSON(err.Status, err)
-// 		return
-// 	}
-// 	recipe, getErr := service.GetRecipe(recipeId)
-// 	if getErr != nil {
-// 		c.JSON(getErr.Status, getErr)
-// 		return
-// 	}
-// 	c.JSON(http.StatusOK, recipe)
-// }
+func (server *Server) updateRecipe(ctx *gin.Context) {
+	var req updateRecipeRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
 
-// func Update(c *gin.Context) {
-// 	recipeId, recipeErr := strconv.ParseInt(c.Param("recipe_id"), 10, 64)
-// 	if recipeErr != nil {
-// 		err := errors.NewBadRequestError("recipe id should be a number")
-// 		c.JSON(err.Status, err)
-// 		return
-// 	}
+	recipeId, err := strconv.Atoi(ctx.Param("recipe_id"))
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
 
-// 	var recipe recipes.Recipe
-// 	if err := c.ShouldBindJSON(&recipe); err != nil {
-// 		restErr := errors.NewBadRequestError("invalid json body")
-// 		c.JSON(restErr.Status, restErr)
-// 		return
-// 	}
+	arg := db.UpdateRecipeParams{
+		ID: int32(recipeId),
+		Title: req.Title,
+		Description:  req.Description,
+		CookingTime:  req.CookingTime,
+		Ingredients:  req.Ingredients,
+		Instructions: req.Instructions,
+	}
 
-// 	recipe.Id = recipeId
+	result, err := server.store.UpdateRecipe(ctx, arg)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+			return
+	}
+	ctx.JSON(http.StatusOK, result)
+}
 
-// 	result, err := service.UpdateRecipe(recipe)
-// 	if err != nil {
-// 		c.JSON(err.Status, err)
-// 		return
-// 	}
-// 	c.JSON(http.StatusOK, result)
-// }
+func (server *Server) deleteRecipe(ctx *gin.Context) {
+	recipeId, err := strconv.Atoi(ctx.Param("recipe_id"))
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
 
-// func Delete(c *gin.Context) {
-// 	recipeId, recipeErr := strconv.ParseInt(c.Param("recipe_id"), 10, 64)
-// 	if recipeErr != nil {
-// 		err := errors.NewBadRequestError("invalid recipe id")
-// 		c.JSON(err.Status, err)
-// 		return
-// 	}
+	if err := server.store.DeleteRecipe(ctx, int32(recipeId)); err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
 
-// 	if deleteErr := service.DeleteRecipe(recipeId); deleteErr != nil {
-// 		c.JSON(deleteErr.Status, deleteErr)
-// 		return
-// 	}
-
-// 	c.JSON(http.StatusOK, map[string]string{"status": "deleted"})
-
-// }
+	ctx.JSON(http.StatusOK, map[string]string{"status": "deleted"})
+}

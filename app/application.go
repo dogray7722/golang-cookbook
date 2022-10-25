@@ -16,13 +16,13 @@ func NewServer(store *db.Store) *Server {
 	server := &Server{store: store}
 	router := gin.Default()
 
-	//router.Use(CORSMiddleware())
+	router.Use(CORSMiddleware())
 
-	//router.POST("/recipes", server.createRecipe)
-	// router.GET("/recipes/:recipe_id", recipes.Get)
-	// router.GET("/recipes", recipes.List)
-	// router.PUT("/recipes/:recipe_id", recipes.Update)
-	// router.DELETE("/recipes/:recipe_id", recipes.Delete)
+	router.POST("/recipes", server.createRecipe)
+	router.GET("/recipes/:recipe_id", server.getRecipe)
+	router.GET("/recipes", server.listRecipes)
+	router.PUT("/recipes/:recipe_id", server.updateRecipe)
+	router.DELETE("/recipes/:recipe_id", server.deleteRecipe)
 
 	server.router = router
 	return server
@@ -42,6 +42,14 @@ func CORSMiddleware() gin.HandlerFunc {
 		}
 		c.Next()
 	}
+}
+
+func (server *Server) Start(address string) error {
+	return server.router.Run(address)
+}
+
+func errorResponse(err error) gin.H {
+	return gin.H{"error": err.Error()}
 }
 
 
