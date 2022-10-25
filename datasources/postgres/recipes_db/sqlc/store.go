@@ -1,22 +1,17 @@
 package recipes_db
 
-import "database/sql"
+import (
+	"database/sql"
+)
 
-// Store defines all functions to execute db queries
-type Store interface {
-	Querier
-}
-
-// SQLStore provides all functions to execute SQL queries and transactions
-type SQLStore struct {
-	db *sql.DB
+type Store struct {
 	*Queries
+	db *sql.DB
 }
 
-// NewStore creates a new store
-func NewStore(db *sql.DB) Store {
-	return &SQLStore{
-		db:      db,
+func NewStore(db *sql.DB) *Store {
+	return &Store{
+		db: db,
 		Queries: New(db),
 	}
 }

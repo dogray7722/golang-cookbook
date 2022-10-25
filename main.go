@@ -2,11 +2,10 @@ package main
 
 import (
 	"database/sql"
-	"log"
-
-
+	"github.com/golang-cookbook/app"
 	db "github.com/golang-cookbook/datasources/postgres/recipes_db/sqlc"
-) 
+	"log"
+)
 
 const (
 	dbDriver = "postgres"
@@ -21,9 +20,6 @@ func main() {
 	}
 
 	store := db.NewStore(conn)
-
-	server := 
-	
-
+	srv := app.NewServer(&store)
 
 }

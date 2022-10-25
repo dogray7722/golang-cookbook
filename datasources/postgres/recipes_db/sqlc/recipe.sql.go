@@ -13,7 +13,7 @@ import (
 	"github.com/lib/pq"
 )
 
-const createRecipe = `-- name: CreateRecipe :one
+const CreateRecipe = `-- name: CreateRecipe :one
 INSERT INTO recipes (
   title,
   description,
@@ -36,7 +36,7 @@ type CreateRecipeParams struct {
 }
 
 func (q *Queries) CreateRecipe(ctx context.Context, arg CreateRecipeParams) (Recipe, error) {
-	row := q.db.QueryRowContext(ctx, createRecipe,
+	row := q.db.QueryRowContext(ctx, CreateRecipe,
 		arg.Title,
 		arg.Description,
 		arg.CookingTime,
@@ -57,23 +57,23 @@ func (q *Queries) CreateRecipe(ctx context.Context, arg CreateRecipeParams) (Rec
 	return i, err
 }
 
-const deleteRecipe = `-- name: DeleteRecipe :exec
+const DeleteRecipe = `-- name: DeleteRecipe :exec
 DELETE FROM recipes
 WHERE id = $1
 `
 
 func (q *Queries) DeleteRecipe(ctx context.Context, id int32) error {
-	_, err := q.db.ExecContext(ctx, deleteRecipe, id)
+	_, err := q.db.ExecContext(ctx, DeleteRecipe, id)
 	return err
 }
 
-const getRecipe = `-- name: GetRecipe :one
+const GetRecipe = `-- name: GetRecipe :one
   SELECT id, title, description, cooking_time, ingredients, instructions, date_created FROM recipes
   WHERE id = $1 LIMIT 1
 `
 
 func (q *Queries) GetRecipe(ctx context.Context, id int32) (Recipe, error) {
-	row := q.db.QueryRowContext(ctx, getRecipe, id)
+	row := q.db.QueryRowContext(ctx, GetRecipe, id)
 	var i Recipe
 	err := row.Scan(
 		&i.ID,
@@ -87,7 +87,7 @@ func (q *Queries) GetRecipe(ctx context.Context, id int32) (Recipe, error) {
 	return i, err
 }
 
-const listRecipes = `-- name: ListRecipes :many
+const ListRecipes = `-- name: ListRecipes :many
 SELECT id, title, description, cooking_time, ingredients, instructions, date_created FROM recipes
 ORDER BY id
 LIMIT $1
@@ -100,7 +100,7 @@ type ListRecipesParams struct {
 }
 
 func (q *Queries) ListRecipes(ctx context.Context, arg ListRecipesParams) ([]Recipe, error) {
-	rows, err := q.db.QueryContext(ctx, listRecipes, arg.Limit, arg.Offset)
+	rows, err := q.db.QueryContext(ctx, ListRecipes, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -130,7 +130,7 @@ func (q *Queries) ListRecipes(ctx context.Context, arg ListRecipesParams) ([]Rec
 	return items, nil
 }
 
-const updateRecipe = `-- name: UpdateRecipe :one
+const UpdateRecipe = `-- name: UpdateRecipe :one
 UPDATE recipes
   set title = $2,
   description = $3,
@@ -151,7 +151,7 @@ type UpdateRecipeParams struct {
 }
 
 func (q *Queries) UpdateRecipe(ctx context.Context, arg UpdateRecipeParams) (Recipe, error) {
-	row := q.db.QueryRowContext(ctx, updateRecipe,
+	row := q.db.QueryRowContext(ctx, UpdateRecipe,
 		arg.ID,
 		arg.Title,
 		arg.Description,
