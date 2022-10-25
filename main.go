@@ -1,10 +1,9 @@
 package main
 
 import (
-	"database/sql"
-	"github.com/golang-cookbook/app"
-	db "github.com/golang-cookbook/datasources/postgres/recipes_db/sqlc"
-	"log"
+// 	"database/sql"
+// 	db "github.com/golang-cookbook/datasources/postgres/recipes_db/sqlc"
+// 	"log"
 )
 
 const (
@@ -14,12 +13,12 @@ const (
 
 func main() {
 
-	conn, err := sql.Open(dbDriver, dbSource)
-	if err != nil {
-		log.Fatal("unable to connect to db:", err)
-	}
+	// conn, err := sql.Open(dbDriver, dbSource)
+	// if err != nil {
+	// 	log.Fatal("unable to connect to db:", err)
+	// }
 
-	store := db.NewStore(conn)
+	// store := db.NewStore(conn)
 	
 
 }
