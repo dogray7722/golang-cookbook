@@ -7,7 +7,6 @@ package recipes_db
 
 import (
 	"context"
-	"database/sql"
 	"time"
 
 	"github.com/lib/pq"
@@ -27,12 +26,12 @@ INSERT INTO recipes (
 `
 
 type CreateRecipeParams struct {
-	Title        string         `json:"title"`
-	Description  sql.NullString `json:"description"`
-	CookingTime  string         `json:"cookingTime"`
-	Ingredients  []string       `json:"ingredients"`
-	Instructions string         `json:"instructions"`
-	DateCreated  time.Time      `json:"dateCreated"`
+	Title        string    `json:"title"`
+	Description  string    `json:"description"`
+	CookingTime  string    `json:"cookingTime"`
+	Ingredients  []string  `json:"ingredients"`
+	Instructions string    `json:"instructions"`
+	DateCreated  time.Time `json:"dateCreated"`
 }
 
 func (q *Queries) CreateRecipe(ctx context.Context, arg CreateRecipeParams) (Recipe, error) {
@@ -142,12 +141,12 @@ RETURNING id, title, description, cooking_time, ingredients, instructions, date_
 `
 
 type UpdateRecipeParams struct {
-	ID           int32          `json:"id"`
-	Title        string         `json:"title"`
-	Description  sql.NullString `json:"description"`
-	CookingTime  string         `json:"cookingTime"`
-	Ingredients  []string       `json:"ingredients"`
-	Instructions string         `json:"instructions"`
+	ID           int32    `json:"id"`
+	Title        string   `json:"title"`
+	Description  string   `json:"description"`
+	CookingTime  string   `json:"cookingTime"`
+	Ingredients  []string `json:"ingredients"`
+	Instructions string   `json:"instructions"`
 }
 
 func (q *Queries) UpdateRecipe(ctx context.Context, arg UpdateRecipeParams) (Recipe, error) {

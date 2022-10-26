@@ -12,16 +12,20 @@ import (
 
 type createRecipeRequest struct {
 	Title string `json:"title" binding:"required"`
-	Description  sql.NullString `json:"description"`
+	Description  string `json:"description"`
 	CookingTime  string         `json:"cookingTime" binding:"required"`
 	Ingredients  []string       `json:"ingredients" binding:"required"`
 	Instructions string         `json:"instructions" binding:"required"`
 }
 
+type getRecipeRequest struct {
+	ID int32 `uri:"id" binding:"required,min=1"`
+}
+
 type updateRecipeRequest struct {
-	ID string `json:"id" binding:"required"`
+	ID string `json:"id"`
 	Title string `json:"title" binding:"required"`
-	Description  sql.NullString `json:"description"`
+	Description  string `json:"description"`
 	CookingTime  string         `json:"cookingTime" binding:"required"`
 	Ingredients  []string       `json:"ingredients" binding:"required"`
 	Instructions string         `json:"instructions" binding:"required"`
@@ -51,14 +55,18 @@ func (server *Server) createRecipe(ctx *gin.Context) {
 }
 
 func (server *Server) getRecipe(ctx *gin.Context) {
-	recipeId, err := strconv.Atoi(ctx.Param("recipe_id"))
-	if err != nil {
+	var req getRecipeRequest
+	if err := ctx.ShouldBindUri(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
 	
-	recipe, err := server.store.GetRecipe(ctx, int32(recipeId))
+	recipe, err := server.store.GetRecipe(ctx, req.ID)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, errorResponse(err))
+			return
+		}
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
@@ -125,3 +133,4 @@ func (server *Server) deleteRecipe(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, map[string]string{"status": "deleted"})
 }
+

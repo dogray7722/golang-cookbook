@@ -5,16 +5,15 @@
 package recipes_db
 
 import (
-	"database/sql"
 	"time"
 )
 
 type Recipe struct {
-	ID           int32          `json:"id"`
-	Title        string         `json:"title"`
-	Description  sql.NullString `json:"description"`
-	CookingTime  string         `json:"cookingTime"`
-	Ingredients  []string       `json:"ingredients"`
-	Instructions string         `json:"instructions"`
-	DateCreated  time.Time      `json:"dateCreated"`
+	ID           int32     `json:"id"`
+	Title        string    `json:"title"`
+	Description  string    `json:"description"`
+	CookingTime  string    `json:"cookingTime"`
+	Ingredients  []string  `json:"ingredients"`
+	Instructions string    `json:"instructions"`
+	DateCreated  time.Time `json:"dateCreated"`
 }

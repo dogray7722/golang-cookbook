@@ -13,7 +13,7 @@ import (
 func PopulateTest() CreateRecipeParams {
 	arg := CreateRecipeParams{
 		Title: util.RandomTitle(),
-		Description: sql.NullString{String: util.RandomDescription(), Valid: true},
+		Description: util.RandomDescription(),
 		CookingTime: util.RandomCookingTime(),
 		Ingredients: util.RandomIngredients(),
 		Instructions: util.RandomInstructions(),

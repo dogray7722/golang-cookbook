@@ -19,7 +19,7 @@ func NewServer(store *db.Store) *Server {
 	router.Use(CORSMiddleware())
 
 	router.POST("/recipes", server.createRecipe)
-	router.GET("/recipes/:recipe_id", server.getRecipe)
+	router.GET("/recipes/:id", server.getRecipe)
 	router.GET("/recipes", server.listRecipes)
 	router.PUT("/recipes/:recipe_id", server.updateRecipe)
 	router.DELETE("/recipes/:recipe_id", server.deleteRecipe)
