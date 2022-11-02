@@ -19,7 +19,7 @@ type createRecipeRequest struct {
 }
 
 type getRecipeRequest struct {
-	ID int32 `uri:"id" binding:"required,min=1"`
+	ID int32 `uri:"recipe_id" binding:"required,min=1"`
 }
 
 type updateRecipeRequest struct {
