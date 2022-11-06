@@ -10,6 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+// Populate Test create a random recipe for us in testing
 func PopulateTest() CreateRecipeParams {
 	arg := CreateRecipeParams{
 		Title: util.RandomTitle(),
@@ -19,10 +20,10 @@ func PopulateTest() CreateRecipeParams {
 		Instructions: util.RandomInstructions(),
 		DateCreated: time.Now().UTC(),
 	}
-	
 	return arg
 }
 
+// createTestRecipe validates creating a new recipe
 func createTestRecipe(t *testing.T) Recipe {
 	arg := PopulateTest()
 
@@ -42,10 +43,12 @@ func createTestRecipe(t *testing.T) Recipe {
 	return recipe
 }
 
+// TestCreateRecipe conducts a create recipe test
 func TestCreateRecipe(t *testing.T) {
 	createTestRecipe(t)
 } 
 
+// TestGetRecipe validates getting a recipe
 func TestGetRecipe(t *testing.T) {
 	recipe := createTestRecipe(t)
 	res, err := testQueries.GetRecipe(context.Background(), recipe.ID)
@@ -61,6 +64,7 @@ func TestGetRecipe(t *testing.T) {
 	require.NotZero(t, res.DateCreated)
 }
 
+// TestUpdateRecipe validates modifying a recipe
 func TestUpdateRecipe(t *testing.T) {
 	recipe1 := createTestRecipe(t)
 	originalRecipe, _ := testQueries.GetRecipe(context.Background(), recipe1.ID)
@@ -85,6 +89,7 @@ func TestUpdateRecipe(t *testing.T) {
 	require.WithinDuration(t, recipe1.DateCreated, recipe2.DateCreated, time.Second)
 }
 
+// TestDelete recipe validates removing a recipe
 func TestDeleteRecipe(t *testing.T) {
 	recipe1 := createTestRecipe(t)
 
@@ -97,6 +102,7 @@ func TestDeleteRecipe(t *testing.T) {
 	require.EqualError(t, err, sql.ErrNoRows.Error())
 }
 
+// TestListRecipes validates retrieving multiple recipes
 func TestListRecipes(t *testing.T) {
 	for i := 0; i < 5; i++ {
 		createTestRecipe(t)

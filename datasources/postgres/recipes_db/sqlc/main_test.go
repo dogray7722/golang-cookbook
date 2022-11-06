@@ -13,6 +13,7 @@ import (
 var testQueries *Queries
 var testDB *sql.DB
 
+// TestMain initializes the database testing package
 func TestMain(m *testing.M) {
 	config, err := util.LoadConfig("../../../../") 
 	if err != nil {

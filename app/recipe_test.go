@@ -17,7 +17,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// TestGetRecipeAPI runs mock tests against
+// TestGetRecipeAPI runs mock tests against the api code
 func TestGetRecipeAPI(t *testing.T) {
 	recipe := randomRecipe()
 
@@ -105,6 +105,7 @@ func TestGetRecipeAPI(t *testing.T) {
 	}
 }
 
+// randomRecipe creates new unique recipe for testing
 func randomRecipe() db.Recipe {
 	return db.Recipe{
 		ID: int32(util.RandomInt(1, 1000)),

@@ -2,12 +2,14 @@ package util
 
 import "github.com/spf13/viper"
 
+// Config defines access to a database
 type Config struct {
 	DBDriver string	`mapstructure:"DB_DRIVER"`
 	DBSource string `mapstructure:"DB_SOURCE"`
 	ServerAddress string `mapstructure:"SERVER_ADDRESS"`
 }
 
+// LoadConfig provides configuration values
 func LoadConfig(path string) (config Config, err error) {
 	viper.AddConfigPath(path)
 	viper.SetConfigName("app")

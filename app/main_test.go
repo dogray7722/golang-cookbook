@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-
+// TestMain initializes the api mock tests
 func TestMain(m *testing.M) {
 	gin.SetMode((gin.TestMode))
 

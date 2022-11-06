@@ -10,6 +10,7 @@ import (
 	db "github.com/golang-cookbook/datasources/postgres/recipes_db/sqlc"
 )
 
+// createRecipeRequest defines the recipe create request object
 type createRecipeRequest struct {
 	Title string `json:"title" binding:"required"`
 	Description  string `json:"description"`
@@ -18,10 +19,12 @@ type createRecipeRequest struct {
 	Instructions string         `json:"instructions" binding:"required"`
 }
 
+// getRecipeRequest defines the recipe get request object
 type getRecipeRequest struct {
 	ID int32 `uri:"recipe_id" binding:"required,min=1"`
 }
 
+// updateRecipeRequest defines the recipe update request object
 type updateRecipeRequest struct {
 	ID string `json:"id"`
 	Title string `json:"title" binding:"required"`
@@ -31,6 +34,13 @@ type updateRecipeRequest struct {
 	Instructions string         `json:"instructions" binding:"required"`
 }
 
+// listRecipesRequest defines the recipe list request object
+type listRecipesRequest struct {
+	PageID int32 `form:"page_id" binding:"required,min=1"`
+	PageSize int32 `form:"page_size" binding:"required,min=5,max=10"`
+}
+
+// createRecipe is the api handler for creating a single recipe
 func (server *Server) createRecipe(ctx *gin.Context) {
 	var req createRecipeRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -54,6 +64,7 @@ func (server *Server) createRecipe(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, result)
 }
 
+// getRecipe is the api handler for retrieving a single recipe
 func (server *Server) getRecipe(ctx *gin.Context) {
 	var req getRecipeRequest
 	if err := ctx.ShouldBindUri(&req); err != nil {
@@ -73,11 +84,7 @@ func (server *Server) getRecipe(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, recipe)
 }
 
-type listRecipesRequest struct {
-	PageID int32 `form:"page_id" binding:"required,min=1"`
-	PageSize int32 `form:"page_size" binding:"required,min=5,max=10"`
-}
-
+// listRecipes is the api handler for retrieving a list of recipes
 func (server *Server) listRecipes(ctx *gin.Context) {
 	var req listRecipesRequest
 	if err := ctx.ShouldBindQuery(&req); err != nil {
@@ -99,6 +106,7 @@ func (server *Server) listRecipes(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, recipes)
 }
 
+// updateRecipe is the api handler for modifying a single recipe
 func (server *Server) updateRecipe(ctx *gin.Context) {
 	var req updateRecipeRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -129,6 +137,7 @@ func (server *Server) updateRecipe(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, result)
 }
 
+// deleteRecipe is the api handler for deleting a single recipe
 func (server *Server) deleteRecipe(ctx *gin.Context) {
 	recipeId, err := strconv.Atoi(ctx.Param("recipe_id"))
 	if err != nil {

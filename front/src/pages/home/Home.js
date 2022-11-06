@@ -5,7 +5,7 @@ import "./Home.css";
 import RecipeList from "../../components/RecipeList";
 
 export default function Home() {
-  const { data, isPending, error } = useFetch("http://localhost:8080/recipes");
+  const { data, isPending, error } = useFetch("https://localhost:8080/recipes?page_id=1&page_size=5");
 
   return (
     <div className="home">
