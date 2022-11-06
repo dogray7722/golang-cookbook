@@ -34,7 +34,7 @@ export default function Create() {
       description,
       ingredients,
       instructions,
-      cooking_time: cookingTime + " minutes",
+      cookingTime
     });
   };
 
@@ -80,10 +80,7 @@ export default function Create() {
           </div>
         </label>
         <p>
-          Current Ingredient:
-          {ingredients.map((ing) => (
-            <em key={ing}>{ing}, </em>
-          ))}
+          Current Ingredients: {ingredients.join(", ")}
         </p>
         <label>
           <span>Recipe Instructions:</span>
@@ -96,7 +93,7 @@ export default function Create() {
         <label>
           <span>Cooking Time:</span>
           <input
-            type="number"
+            type="text"
             onChange={(e) => setCookingTime(e.target.value)}
             value={cookingTime}
             required
