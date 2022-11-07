@@ -21,8 +21,14 @@ test:
 
 server: 
 	go run main.go
+
+up:
+	docker compose up
+
+down:
+	docker compose down
 	
 mock:
 	mockgen -package mockdb -destination datasources/postgres/recipes_db/mock/store.go github.com/golang-cookbook/datasources/postgres/recipes_db/sqlc Store
 
-.PHONY: postgres createdb dropdb migrateup migratedown sqlc test server mock
+.PHONY: postgres createdb dropdb migrateup migratedown sqlc test server mock up down

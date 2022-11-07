@@ -17,3 +17,14 @@ services:
       - postgres
     entrypoint: [ "/app/wait-for.sh", "postgres:5432", "--", "/app/start.sh" ]
     command: [ "/app/main" ]
+  front:
+    build:
+      context: ./front
+      dockerfile: ./front/Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - app
+    image: front:react
+    container_name: react_container
+    command: npm start
