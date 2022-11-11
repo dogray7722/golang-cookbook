@@ -8,14 +8,17 @@ export default function Recipe() {
   const { id } = useParams();
   const url = "http://localhost:8080/recipes/" + id;
   const { data: recipe, error, isPending } = useFetch(url);
+  
   return (
+    
     <div className="recipe">
+    
       {error && <p className="error">{error}</p>}
       {isPending && <p className="loading">Loading...</p>}
       {recipe && (
         <>
           <h2 className="page-title">{recipe.title}</h2>
-          <p>Takes {recipe.cooking_time} to make.</p>
+          <p>Takes {recipe.cookingTime} to make.</p>
           <ul>
             {recipe.ingredients.map((ing) => (
               <li key={ing}>{ing}</li>
