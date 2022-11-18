@@ -1,6 +1,8 @@
 FROM node:15.13-alpine
-WORKDIR /front
-ENV PATH="./node_modules/.bin:$PATH"
-COPY . .
-RUN npm run build
+WORKDIR /app
+ENV PATH /app/node_modules/.bin:$PATH
+COPY package.json ./
+COPY package-lock.json ./
+RUN npm install
+COPY . ./
 CMD [ "npm", "start" ]
