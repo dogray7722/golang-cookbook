@@ -22,7 +22,7 @@ services:
   front:
     build:
       context: ./front
-      dockerfile: ./front/Dockerfile
+      dockerfile: ./Dockerfile
     ports:
       - "3000:3000"
     image: react_container
@@ -30,5 +30,5 @@ services:
     stdin_open: true
     volumes:
       - ./frontend:/front
-      - '/front/node_modules'
+      - '/node_modules'
     command: npm start
