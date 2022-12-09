@@ -8,7 +8,7 @@ dropdb:
 	docker exec -it postgres12 dropdb recipes_db
 
 migrateup:
-	migrate -path datasources/postgres/recipes_db/db_migrations -database "postgresql://root:mysecretpassword@localhost:5432/recipes_db?sslmode=disable" -verbose up
+	migrate -path datasources/postgres/recipes_db/db_migrations -database "postgresql://root:mysecretpassword@golang-cookbook-1.cbkr6oxrsrka.us-west-2.rds.amazonaws.com:5432/recipes_db" -verbose up
 
 migratedown:
 	migrate -path datasources/postgres/recipes_db/db_migrations -database "postgresql://root:mysecretpassword@localhost:5432/recipes_db?sslmode=disable" -verbose down
