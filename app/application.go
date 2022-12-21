@@ -44,7 +44,7 @@ func CORSMiddleware() gin.HandlerFunc {
 	}
 }
 
-// Start runs the gin server in order to listen and server requests
+// Start runs the gin server in order to listen and serve requests
 func (server *Server) Start(address string) error {
 	return server.router.Run(address)
 }
